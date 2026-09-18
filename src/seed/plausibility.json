@@ -1,0 +1,641 @@
+{
+  "formAccepts": {
+    "paratha": [
+      "vegetable",
+      "leafy",
+      "root",
+      "gourd",
+      "legume",
+      "protein"
+    ],
+    "roti": [
+      "flour",
+      "grain"
+    ],
+    "thepla": [
+      "vegetable",
+      "leafy",
+      "root",
+      "flour"
+    ],
+    "poori": [
+      "root",
+      "vegetable",
+      "flour"
+    ],
+    "dosa": [
+      "grain",
+      "flour",
+      "vegetable",
+      "legume",
+      "leafy"
+    ],
+    "idli": [
+      "grain",
+      "flour",
+      "vegetable"
+    ],
+    "uttapam": [
+      "vegetable",
+      "aromatic",
+      "leafy"
+    ],
+    "appam": [
+      "grain"
+    ],
+    "adai": [
+      "legume",
+      "lentil",
+      "vegetable"
+    ],
+    "pesarattu": [],
+    "upma": [
+      "grain",
+      "vegetable",
+      "fruit"
+    ],
+    "poha": [
+      "vegetable",
+      "aromatic"
+    ],
+    "pongal": [],
+    "khichdi": [
+      "vegetable",
+      "leafy",
+      "legume"
+    ],
+    "curd rice": [],
+    "rice": [
+      "vegetable",
+      "leafy",
+      "legume",
+      "protein",
+      "grain"
+    ],
+    "pulao": [
+      "vegetable",
+      "legume",
+      "protein",
+      "nut",
+      "leafy"
+    ],
+    "biryani": [
+      "vegetable",
+      "protein",
+      "legume"
+    ],
+    "fried rice": [
+      "vegetable",
+      "protein",
+      "legume"
+    ],
+    "lemon rice": [],
+    "tamarind rice": [],
+    "coconut rice": [],
+    "tomato rice": [],
+    "bisi bele bath": [],
+    "sambar rice": [],
+    "vangi bath": [],
+    "gravy": [
+      "vegetable",
+      "gourd",
+      "root",
+      "legume",
+      "protein",
+      "dairy",
+      "nut"
+    ],
+    "masala": [
+      "vegetable",
+      "gourd",
+      "root",
+      "legume",
+      "protein",
+      "dairy",
+      "nut"
+    ],
+    "curry": [
+      "vegetable",
+      "gourd",
+      "root",
+      "legume",
+      "protein"
+    ],
+    "kurma": [
+      "vegetable",
+      "gourd",
+      "root",
+      "legume",
+      "protein",
+      "nut"
+    ],
+    "kuzhambu": [
+      "vegetable",
+      "gourd",
+      "root",
+      "legume",
+      "protein"
+    ],
+    "sambar": [
+      "vegetable",
+      "gourd",
+      "root"
+    ],
+    "rasam": [
+      "vegetable",
+      "fruit",
+      "aromatic",
+      "spice"
+    ],
+    "dal": [
+      "lentil",
+      "legume",
+      "leafy",
+      "vegetable"
+    ],
+    "kootu": [
+      "vegetable",
+      "leafy",
+      "gourd",
+      "legume"
+    ],
+    "poriyal": [
+      "vegetable",
+      "leafy",
+      "gourd",
+      "root",
+      "legume"
+    ],
+    "thoran": [
+      "vegetable",
+      "leafy",
+      "gourd",
+      "root",
+      "legume"
+    ],
+    "palya": [
+      "vegetable",
+      "leafy",
+      "gourd",
+      "root",
+      "legume"
+    ],
+    "usili": [
+      "vegetable",
+      "legume"
+    ],
+    "varuval": [
+      "vegetable",
+      "gourd",
+      "root",
+      "protein"
+    ],
+    "sabzi": [
+      "vegetable",
+      "gourd",
+      "root",
+      "leafy",
+      "legume"
+    ],
+    "bharta": [
+      "vegetable",
+      "gourd",
+      "root"
+    ],
+    "kofta": [
+      "vegetable",
+      "root",
+      "protein"
+    ],
+    "tikka": [
+      "protein",
+      "vegetable"
+    ],
+    "bhurji": [
+      "protein",
+      "vegetable"
+    ],
+    "omelette": [
+      "protein",
+      "vegetable"
+    ],
+    "cutlet": [
+      "vegetable",
+      "root",
+      "legume",
+      "protein"
+    ],
+    "pakora": [
+      "vegetable",
+      "leafy",
+      "gourd",
+      "root"
+    ],
+    "vada": [
+      "lentil",
+      "legume",
+      "vegetable"
+    ],
+    "samosa": [
+      "vegetable",
+      "root",
+      "legume"
+    ],
+    "chaat": [
+      "vegetable",
+      "root",
+      "legume",
+      "fruit"
+    ],
+    "salad": [
+      "vegetable",
+      "gourd",
+      "root",
+      "fruit",
+      "leafy"
+    ],
+    "raita": [
+      "vegetable",
+      "gourd",
+      "root",
+      "fruit",
+      "leafy"
+    ],
+    "chutney": [
+      "vegetable",
+      "leafy",
+      "fruit",
+      "legume",
+      "nut",
+      "other"
+    ],
+    "pickle": [
+      "vegetable",
+      "fruit",
+      "root"
+    ],
+    "papad": [],
+    "soup": [
+      "vegetable",
+      "leafy",
+      "legume"
+    ],
+    "avial": [],
+    "erissery": [
+      "vegetable",
+      "gourd",
+      "legume"
+    ],
+    "pulissery": [
+      "vegetable",
+      "gourd",
+      "fruit"
+    ],
+    "kadhi": [
+      "vegetable",
+      "gourd"
+    ],
+    "pav bhaji": [],
+    "halwa": [
+      "root",
+      "fruit",
+      "grain",
+      "flour",
+      "lentil",
+      "nut",
+      "gourd"
+    ],
+    "payasam": [
+      "grain",
+      "fruit",
+      "legume",
+      "lentil",
+      "nut",
+      "gourd"
+    ],
+    "ladoo": [
+      "flour",
+      "nut",
+      "grain",
+      "legume",
+      "lentil",
+      "other"
+    ],
+    "burfi": [
+      "nut",
+      "dairy",
+      "root",
+      "other"
+    ],
+    "noodles": [
+      "vegetable",
+      "protein"
+    ],
+    "pasta": [
+      "vegetable",
+      "protein"
+    ],
+    "sundal": [
+      "legume"
+    ],
+    "bhel": [],
+    "dhokla": [
+      "flour",
+      "vegetable"
+    ],
+    "idiyappam": [],
+    "puttu": [],
+    "kozhukattai": [
+      "lentil",
+      "legume",
+      "other"
+    ],
+    "paniyaram": [
+      "grain",
+      "vegetable"
+    ]
+  },
+  "formExcludes": {
+    "raita": [
+      "bitter gourd",
+      "drumstick"
+    ],
+    "halwa": [
+      "bitter gourd",
+      "brinjal",
+      "okra"
+    ],
+    "chaat": [
+      "bitter gourd"
+    ],
+    "salad": [
+      "brinjal"
+    ],
+    "kadhi": [
+      "fenugreek leaf"
+    ]
+  },
+  "baseAdditions": {
+    "gravy": [
+      "paneer",
+      "mushroom",
+      "corn",
+      "capsicum",
+      "peas",
+      "potato",
+      "cauliflower",
+      "egg",
+      "tofu",
+      "soya chunks",
+      "spinach",
+      "fenugreek leaf"
+    ],
+    "masala": [
+      "paneer",
+      "potato",
+      "capsicum",
+      "peas",
+      "egg",
+      "mushroom",
+      "cauliflower"
+    ],
+    "curry": [
+      "potato",
+      "cauliflower",
+      "brinjal",
+      "okra",
+      "capsicum",
+      "egg",
+      "mushroom",
+      "paneer"
+    ],
+    "kurma": [
+      "potato",
+      "peas",
+      "carrot",
+      "capsicum",
+      "cauliflower",
+      "mushroom",
+      "egg",
+      "paneer"
+    ],
+    "kuzhambu": [
+      "brinjal",
+      "drumstick",
+      "okra",
+      "shallot",
+      "bitter gourd",
+      "raw banana",
+      "potato",
+      "val"
+    ],
+    "sambar": [
+      "drumstick",
+      "brinjal",
+      "radish",
+      "pumpkin",
+      "okra",
+      "shallot",
+      "bottle gourd",
+      "ash gourd"
+    ],
+    "rasam": [
+      "tomato",
+      "garlic",
+      "black pepper",
+      "lemon",
+      "pineapple"
+    ],
+    "dal": [
+      "spinach",
+      "bottle gourd",
+      "tomato",
+      "garlic",
+      "fenugreek leaf"
+    ],
+    "kootu": [
+      "snake gourd",
+      "chayote",
+      "cabbage",
+      "bottle gourd",
+      "ash gourd",
+      "pumpkin",
+      "spinach",
+      "ridge gourd"
+    ],
+    "chutney": [
+      "coconut",
+      "tomato",
+      "coriander leaf",
+      "mint",
+      "peanut",
+      "curry leaf",
+      "onion",
+      "garlic",
+      "raw mango"
+    ]
+  },
+  "pairings": {
+    "potato": [
+      "cauliflower",
+      "peas",
+      "fenugreek leaf",
+      "spinach",
+      "onion",
+      "tomato",
+      "brinjal",
+      "capsicum"
+    ],
+    "cauliflower": [
+      "potato",
+      "peas",
+      "capsicum"
+    ],
+    "peas": [
+      "potato",
+      "cauliflower",
+      "paneer",
+      "carrot",
+      "mushroom",
+      "soya chunks"
+    ],
+    "paneer": [
+      "peas",
+      "spinach",
+      "capsicum",
+      "fenugreek leaf",
+      "corn"
+    ],
+    "spinach": [
+      "potato",
+      "paneer",
+      "dal",
+      "corn",
+      "chickpea"
+    ],
+    "fenugreek leaf": [
+      "potato",
+      "paneer",
+      "moong dal",
+      "corn"
+    ],
+    "mushroom": [
+      "peas",
+      "capsicum",
+      "corn"
+    ],
+    "corn": [
+      "capsicum",
+      "spinach",
+      "paneer"
+    ],
+    "cabbage": [
+      "peas",
+      "carrot"
+    ],
+    "carrot": [
+      "cabbage",
+      "french beans",
+      "coconut"
+    ],
+    "beetroot": [
+      "coconut"
+    ],
+    "cucumber": [
+      "peanut"
+    ],
+    "chayote": [
+      "moong dal"
+    ],
+    "drumstick": [
+      "brinjal"
+    ],
+    "brinjal": [
+      "potato",
+      "drumstick"
+    ],
+    "okra": [
+      "onion"
+    ],
+    "tomato": [
+      "onion"
+    ],
+    "bottle gourd": [
+      "chana dal"
+    ],
+    "ridge gourd": [
+      "moong dal"
+    ],
+    "radish": [
+      "moong dal"
+    ],
+    "pumpkin": [
+      "black-eyed pea"
+    ],
+    "raw banana": [
+      "black chickpea"
+    ],
+    "ash gourd": [
+      "black-eyed pea"
+    ],
+    "mango": [
+      "jaggery"
+    ],
+    "egg": [
+      "potato"
+    ],
+    "soya chunks": [
+      "peas"
+    ],
+    "tofu": [
+      "capsicum"
+    ],
+    "sprouts": [
+      "onion"
+    ],
+    "french beans": [
+      "carrot"
+    ],
+    "capsicum": [
+      "paneer",
+      "potato",
+      "corn"
+    ],
+    "cluster beans": [
+      "potato"
+    ],
+    "broad beans": [
+      "potato"
+    ],
+    "sorrel leaf": [
+      "toor dal"
+    ],
+    "amaranth": [
+      "moong dal"
+    ],
+    "colocasia": [
+      "tamarind"
+    ],
+    "yam": [
+      "raw banana"
+    ],
+    "snake gourd": [
+      "moong dal"
+    ],
+    "bitter gourd": [
+      "onion"
+    ],
+    "ivy gourd": [
+      "potato"
+    ],
+    "knol khol": [
+      "potato"
+    ],
+    "coriander leaf": [
+      "coconut"
+    ],
+    "mint": [
+      "coconut"
+    ]
+  }
+}

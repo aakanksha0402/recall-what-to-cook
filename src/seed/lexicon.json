@@ -1,0 +1,2847 @@
+{
+  "ingredients": [
+    {
+      "name": "rice",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "chawal",
+        "sadam",
+        "akki",
+        "biyyam",
+        "annam"
+      ]
+    },
+    {
+      "name": "wheat flour",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "atta",
+        "gehun ka atta",
+        "godhumai maavu",
+        "godhuma pindi",
+        "godhi hittu"
+      ]
+    },
+    {
+      "name": "toor dal",
+      "kind": "staple",
+      "group": "lentil",
+      "aliases": [
+        "tuvar dal",
+        "arhar dal",
+        "thuvaram paruppu",
+        "kandi pappu",
+        "togari bele"
+      ]
+    },
+    {
+      "name": "moong dal",
+      "kind": "staple",
+      "group": "lentil",
+      "aliases": [
+        "mung dal",
+        "pasi paruppu",
+        "pesara pappu",
+        "hesaru bele",
+        "moong daal"
+      ]
+    },
+    {
+      "name": "urad dal",
+      "kind": "staple",
+      "group": "lentil",
+      "aliases": [
+        "ulundu",
+        "minapa pappu",
+        "uddina bele",
+        "black gram dal"
+      ]
+    },
+    {
+      "name": "chana dal",
+      "kind": "staple",
+      "group": "lentil",
+      "aliases": [
+        "kadalai paruppu",
+        "senaga pappu",
+        "kadale bele",
+        "bengal gram dal"
+      ]
+    },
+    {
+      "name": "masoor dal",
+      "kind": "staple",
+      "group": "lentil",
+      "aliases": [
+        "red lentil",
+        "mysore paruppu",
+        "masoor daal"
+      ]
+    },
+    {
+      "name": "dal",
+      "kind": "staple",
+      "group": "lentil",
+      "aliases": [
+        "daal",
+        "dhal",
+        "paruppu",
+        "pappu",
+        "bele",
+        "parippu"
+      ]
+    },
+    {
+      "name": "besan",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "gram flour",
+        "kadalai maavu",
+        "senaga pindi",
+        "kadale hittu"
+      ]
+    },
+    {
+      "name": "rava",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "sooji",
+        "semolina",
+        "bombay rava",
+        "sooji rava"
+      ]
+    },
+    {
+      "name": "poha",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "flattened rice",
+        "aval",
+        "atukulu",
+        "avalakki",
+        "chira"
+      ]
+    },
+    {
+      "name": "oil",
+      "kind": "staple",
+      "group": "fat",
+      "aliases": [
+        "cooking oil",
+        "vegetable oil",
+        "tel",
+        "yennai",
+        "edible oil"
+      ]
+    },
+    {
+      "name": "ghee",
+      "kind": "staple",
+      "group": "fat",
+      "aliases": [
+        "nei",
+        "tuppa",
+        "clarified butter"
+      ]
+    },
+    {
+      "name": "salt",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "namak",
+        "uppu",
+        "ملح",
+        "saindhava lavana"
+      ]
+    },
+    {
+      "name": "sugar",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "cheeni",
+        "sakkarai",
+        "sakkare",
+        "pancharai"
+      ]
+    },
+    {
+      "name": "jaggery",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "gur",
+        "vellam",
+        "bella",
+        "bellam",
+        "gud"
+      ]
+    },
+    {
+      "name": "tamarind",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "imli",
+        "puli",
+        "chintapandu",
+        "hunase",
+        "amli"
+      ]
+    },
+    {
+      "name": "mustard seed",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "rai",
+        "sarson dana",
+        "kadugu",
+        "avalu",
+        "sasive"
+      ]
+    },
+    {
+      "name": "cumin",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "jeera",
+        "jeeragam",
+        "jeelakarra",
+        "jira"
+      ]
+    },
+    {
+      "name": "turmeric",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "haldi",
+        "manjal",
+        "arisina",
+        "pasupu"
+      ]
+    },
+    {
+      "name": "chilli powder",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "mirchi powder",
+        "red chilli powder",
+        "menasina pudi",
+        "karam podi",
+        "milagai thool"
+      ]
+    },
+    {
+      "name": "coriander powder",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "dhania powder",
+        "malli podi",
+        "kothamalli podi",
+        "kothimbir powder"
+      ]
+    },
+    {
+      "name": "garam masala",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "garam masala powder"
+      ]
+    },
+    {
+      "name": "sambar powder",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "sambar podi",
+        "huli pudi",
+        "sambhar masala"
+      ]
+    },
+    {
+      "name": "rasam powder",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "rasam podi",
+        "saaru pudi",
+        "charu powder"
+      ]
+    },
+    {
+      "name": "asafoetida",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "hing",
+        "perungayam",
+        "ingu",
+        "hingu"
+      ]
+    },
+    {
+      "name": "curry leaf",
+      "kind": "staple",
+      "group": "herb",
+      "aliases": [
+        "kadi patta",
+        "karivepaku",
+        "karuveppilai",
+        "kariveppila",
+        "curry patta"
+      ]
+    },
+    {
+      "name": "dried red chilli",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "sukhi lal mirch",
+        "vara milagai",
+        "ettina menasu",
+        "dry red chilli"
+      ]
+    },
+    {
+      "name": "black pepper",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "kali mirch",
+        "milagu",
+        "menasu",
+        "miriyalu"
+      ]
+    },
+    {
+      "name": "fenugreek seed",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "methi seed",
+        "methi dana",
+        "vendhayam",
+        "menthulu",
+        "menthya"
+      ]
+    },
+    {
+      "name": "ajwain",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "carom seed",
+        "omam",
+        "vamu",
+        "ova"
+      ]
+    },
+    {
+      "name": "sesame seed",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "til",
+        "ellu",
+        "nuvvulu",
+        "gingelly seed"
+      ]
+    },
+    {
+      "name": "peanut",
+      "kind": "staple",
+      "group": "nut",
+      "aliases": [
+        "groundnut",
+        "moongphali",
+        "verkadalai",
+        "palli",
+        "shengdana"
+      ]
+    },
+    {
+      "name": "cashew",
+      "kind": "staple",
+      "group": "nut",
+      "aliases": [
+        "kaju",
+        "munthiri",
+        "godambi"
+      ]
+    },
+    {
+      "name": "coconut (dry)",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "dry coconut",
+        "kopra",
+        "copra",
+        "dry copra",
+        "kobbari kobbari"
+      ]
+    },
+    {
+      "name": "onion",
+      "kind": "staple",
+      "group": "aromatic",
+      "aliases": [
+        "pyaz",
+        "vengayam",
+        "ulli",
+        "ullipaya",
+        "kanda"
+      ]
+    },
+    {
+      "name": "garlic",
+      "kind": "staple",
+      "group": "aromatic",
+      "aliases": [
+        "lehsun",
+        "poondu",
+        "vellulli",
+        "bellulli",
+        "lasun"
+      ]
+    },
+    {
+      "name": "ginger",
+      "kind": "staple",
+      "group": "aromatic",
+      "aliases": [
+        "adrak",
+        "inji",
+        "allam",
+        "shunti"
+      ]
+    },
+    {
+      "name": "tea",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "chai",
+        "tea leaves"
+      ]
+    },
+    {
+      "name": "coffee",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "kaapi",
+        "coffee powder"
+      ]
+    },
+    {
+      "name": "milk",
+      "kind": "staple",
+      "group": "dairy",
+      "aliases": [
+        "doodh",
+        "paal",
+        "haalu",
+        "pal"
+      ]
+    },
+    {
+      "name": "curd",
+      "kind": "staple",
+      "group": "dairy",
+      "aliases": [
+        "yogurt",
+        "dahi",
+        "thayir",
+        "perugu",
+        "mosaru"
+      ]
+    },
+    {
+      "name": "butter",
+      "kind": "staple",
+      "group": "fat",
+      "aliases": [
+        "makhan",
+        "vennai",
+        "benne"
+      ]
+    },
+    {
+      "name": "tomato puree",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "tomato paste"
+      ]
+    },
+    {
+      "name": "vinegar",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "sirka"
+      ]
+    },
+    {
+      "name": "soy sauce",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "soya sauce"
+      ]
+    },
+    {
+      "name": "corn flour",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "cornstarch",
+        "corn starch"
+      ]
+    },
+    {
+      "name": "maida",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "all purpose flour",
+        "refined flour",
+        "apf"
+      ]
+    },
+    {
+      "name": "bread crumbs",
+      "kind": "staple",
+      "group": "other",
+      "aliases": [
+        "breadcrumbs"
+      ]
+    },
+    {
+      "name": "sago",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "sabudana",
+        "javvarisi",
+        "saggubiyyam"
+      ]
+    },
+    {
+      "name": "vermicelli",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "semiya",
+        "shavige",
+        "vermicelli noodles"
+      ]
+    },
+    {
+      "name": "noodles",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "chinese noodles"
+      ]
+    },
+    {
+      "name": "pasta",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "macaroni"
+      ]
+    },
+    {
+      "name": "rice flour",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "arisi maavu",
+        "akki hittu",
+        "biyyapu pindi"
+      ]
+    },
+    {
+      "name": "ragi flour",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "finger millet flour",
+        "kezhvaragu maavu",
+        "nachni atta",
+        "ragulu pindi"
+      ]
+    },
+    {
+      "name": "jowar flour",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "sorghum flour",
+        "cholam maavu",
+        "jonna pindi"
+      ]
+    },
+    {
+      "name": "bajra flour",
+      "kind": "staple",
+      "group": "flour",
+      "aliases": [
+        "pearl millet flour",
+        "kambu maavu",
+        "sajjalu pindi"
+      ]
+    },
+    {
+      "name": "kasuri methi",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "dried fenugreek leaves",
+        "kasoori methi"
+      ]
+    },
+    {
+      "name": "bay leaf",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "tej patta",
+        "biryani leaf",
+        "brinji ilai"
+      ]
+    },
+    {
+      "name": "cinnamon",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "dalchini",
+        "patta",
+        "lavangapattai",
+        "dalchina chekka"
+      ]
+    },
+    {
+      "name": "clove",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "laung",
+        "krambu",
+        "lavang"
+      ]
+    },
+    {
+      "name": "cardamom",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "elaichi",
+        "elakkai",
+        "yelakki",
+        "yalakulu"
+      ]
+    },
+    {
+      "name": "star anise",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "chakri phool",
+        "thakkolam",
+        "anasapoo"
+      ]
+    },
+    {
+      "name": "fennel",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "saunf",
+        "sombu",
+        "sopu",
+        "perunjeeragam"
+      ]
+    },
+    {
+      "name": "nutmeg",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "jaiphal",
+        "jathikai",
+        "jaji kaya"
+      ]
+    },
+    {
+      "name": "saffron",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "kesar",
+        "kumkumapoo",
+        "zafran"
+      ]
+    },
+    {
+      "name": "amchur",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "dry mango powder",
+        "amchoor"
+      ]
+    },
+    {
+      "name": "anardana",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "dried pomegranate seed"
+      ]
+    },
+    {
+      "name": "chaat masala",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "chat masala"
+      ]
+    },
+    {
+      "name": "pav bhaji masala",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "pavbhaji masala"
+      ]
+    },
+    {
+      "name": "chole masala",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "chana masala powder"
+      ]
+    },
+    {
+      "name": "biryani masala",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "biriyani masala"
+      ]
+    },
+    {
+      "name": "kitchen king masala",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "kitchen king"
+      ]
+    },
+    {
+      "name": "paprika",
+      "kind": "staple",
+      "group": "spice",
+      "aliases": [
+        "paprika powder"
+      ]
+    },
+    {
+      "name": "oats",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "oatmeal"
+      ]
+    },
+    {
+      "name": "broken wheat",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "dalia",
+        "godhumai rava",
+        "lapsi"
+      ]
+    },
+    {
+      "name": "ragi",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "finger millet",
+        "kezhvaragu",
+        "nachni",
+        "ragulu"
+      ]
+    },
+    {
+      "name": "jowar",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "sorghum",
+        "cholam",
+        "jonna"
+      ]
+    },
+    {
+      "name": "bajra",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "pearl millet",
+        "kambu",
+        "sajjalu"
+      ]
+    },
+    {
+      "name": "foxtail millet",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "thinai",
+        "korra"
+      ]
+    },
+    {
+      "name": "little millet",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "samai",
+        "samalu"
+      ]
+    },
+    {
+      "name": "barnyard millet",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "kuthiraivali",
+        "oodalu"
+      ]
+    },
+    {
+      "name": "kodo millet",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "varagu",
+        "arikelu"
+      ]
+    },
+    {
+      "name": "quinoa",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": []
+    },
+    {
+      "name": "bread",
+      "kind": "staple",
+      "group": "grain",
+      "aliases": [
+        "pav",
+        "white bread"
+      ]
+    },
+    {
+      "name": "almond",
+      "kind": "staple",
+      "group": "nut",
+      "aliases": [
+        "badam"
+      ]
+    },
+    {
+      "name": "pistachio",
+      "kind": "staple",
+      "group": "nut",
+      "aliases": [
+        "pista"
+      ]
+    },
+    {
+      "name": "walnut",
+      "kind": "staple",
+      "group": "nut",
+      "aliases": [
+        "akhrot"
+      ]
+    },
+    {
+      "name": "raisin",
+      "kind": "staple",
+      "group": "fruit",
+      "aliases": [
+        "kishmish",
+        "dry grape",
+        "manuka"
+      ]
+    },
+    {
+      "name": "dates",
+      "kind": "staple",
+      "group": "fruit",
+      "aliases": [
+        "khajur",
+        "pericha pazham"
+      ]
+    },
+    {
+      "name": "okra",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "bhindi",
+        "vendakkai",
+        "bendakaya",
+        "bendekai",
+        "vendakka",
+        "lady finger",
+        "ladies finger"
+      ]
+    },
+    {
+      "name": "drumstick",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "murungakkai",
+        "muringakka",
+        "nuggekai",
+        "saijan",
+        "munagakaya"
+      ]
+    },
+    {
+      "name": "cluster beans",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "kothavarangai",
+        "guar",
+        "gawar",
+        "chikkudukaya",
+        "gorikai",
+        "gavar"
+      ]
+    },
+    {
+      "name": "broad beans",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "avarakkai",
+        "chikkudukaya broad",
+        "surti papdi"
+      ]
+    },
+    {
+      "name": "french beans",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "beans",
+        "farasbi",
+        "french bean"
+      ]
+    },
+    {
+      "name": "flat beans",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "sem",
+        "sem phali",
+        "seema avarakkai"
+      ]
+    },
+    {
+      "name": "capsicum",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "bell pepper",
+        "shimla mirch",
+        "kudai milagai",
+        "dabbakaya mirapakaya",
+        "green pepper"
+      ]
+    },
+    {
+      "name": "cabbage",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "patta gobi",
+        "muttaikose",
+        "kosu",
+        "cabage"
+      ]
+    },
+    {
+      "name": "cauliflower",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "gobi",
+        "phool gobi",
+        "cauli flower",
+        "gobhi"
+      ]
+    },
+    {
+      "name": "broccoli",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": []
+    },
+    {
+      "name": "corn",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "sweet corn",
+        "makka",
+        "makka cholam",
+        "mokka jonna",
+        "bhutta"
+      ]
+    },
+    {
+      "name": "baby corn",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": []
+    },
+    {
+      "name": "peas",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "matar",
+        "pattani",
+        "batani",
+        "green peas"
+      ]
+    },
+    {
+      "name": "tomato",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "tamatar",
+        "thakkali",
+        "tamatar",
+        "tomatoe",
+        "tamater"
+      ]
+    },
+    {
+      "name": "raw mango",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "kachha aam",
+        "mangai",
+        "mamidikaya",
+        "kairi"
+      ]
+    },
+    {
+      "name": "raw banana",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "vazhakkai",
+        "kachha kela",
+        "green banana",
+        "plantain"
+      ]
+    },
+    {
+      "name": "jackfruit",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "kathal",
+        "palakkai",
+        "panasa kaya",
+        "chakka"
+      ]
+    },
+    {
+      "name": "raw papaya",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "kachha papita",
+        "pappali kai"
+      ]
+    },
+    {
+      "name": "knol khol",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "kohlrabi",
+        "nookal",
+        "gedde kosu"
+      ]
+    },
+    {
+      "name": "brinjal",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "eggplant",
+        "baingan",
+        "kathirikai",
+        "kathirikkai",
+        "vankaya",
+        "badanekai",
+        "vazhuthananga",
+        "aubergine",
+        "vangi",
+        "ringan",
+        "begun",
+        "brinjals"
+      ]
+    },
+    {
+      "name": "bottle gourd",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "lauki",
+        "sorakkai",
+        "anapakaya",
+        "sorekayi",
+        "dudhi"
+      ]
+    },
+    {
+      "name": "ridge gourd",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "peerkangai",
+        "beerakaya",
+        "hire kayi",
+        "turai",
+        "gilki"
+      ]
+    },
+    {
+      "name": "snake gourd",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "pudalangai",
+        "potlakaya",
+        "padavalakayi",
+        "padwal"
+      ]
+    },
+    {
+      "name": "bitter gourd",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "karela",
+        "pavakkai",
+        "kakarakaya",
+        "hagalakayi"
+      ]
+    },
+    {
+      "name": "ash gourd",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "poosanikai",
+        "boodida gummadikaya",
+        "budide kumbalakayi",
+        "petha kaddu",
+        "white pumpkin"
+      ]
+    },
+    {
+      "name": "ivy gourd",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "kovakkai",
+        "tindora",
+        "dondakaya",
+        "tondekayi",
+        "kundru"
+      ]
+    },
+    {
+      "name": "pumpkin",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "kaddu",
+        "mathanga",
+        "parangikai",
+        "gummadikaya",
+        "kumbalakayi",
+        "red pumpkin"
+      ]
+    },
+    {
+      "name": "cucumber",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "kheera",
+        "vellarikkai",
+        "kakadi",
+        "dosakaya"
+      ]
+    },
+    {
+      "name": "zucchini",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": []
+    },
+    {
+      "name": "chayote",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "chow chow",
+        "seema kathirikai",
+        "bangalore brinjal",
+        "chow chow squash"
+      ]
+    },
+    {
+      "name": "pointed gourd",
+      "kind": "fresh",
+      "group": "gourd",
+      "aliases": [
+        "parwal",
+        "potol",
+        "kovakka parwal"
+      ]
+    },
+    {
+      "name": "potato",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "aloo",
+        "urulaikizhangu",
+        "batata",
+        "bangaladumpa",
+        "alu"
+      ]
+    },
+    {
+      "name": "sweet potato",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "shakarkandi",
+        "sarkarai valli kizhangu",
+        "genasu"
+      ]
+    },
+    {
+      "name": "yam",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "suran",
+        "senai",
+        "chena",
+        "elephant yam",
+        "elephant foot yam"
+      ]
+    },
+    {
+      "name": "colocasia",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "arbi",
+        "seppankizhangu",
+        "chamagadda",
+        "taro root"
+      ]
+    },
+    {
+      "name": "beetroot",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "chukandar",
+        "beet"
+      ]
+    },
+    {
+      "name": "carrot",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "gajar",
+        "gajjari"
+      ]
+    },
+    {
+      "name": "radish",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "mooli",
+        "mullangi",
+        "sagle",
+        "moolangi"
+      ]
+    },
+    {
+      "name": "turnip",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "shalgam"
+      ]
+    },
+    {
+      "name": "tapioca",
+      "kind": "fresh",
+      "group": "root",
+      "aliases": [
+        "kappa",
+        "maravalli kizhangu",
+        "karra pendalam",
+        "cassava"
+      ]
+    },
+    {
+      "name": "green chilli",
+      "kind": "fresh",
+      "group": "aromatic",
+      "aliases": [
+        "hari mirch",
+        "pachai milagai",
+        "pachi mirapakayi",
+        "hasi menasu",
+        "green chili"
+      ]
+    },
+    {
+      "name": "shallot",
+      "kind": "fresh",
+      "group": "aromatic",
+      "aliases": [
+        "sambar onion",
+        "chinna vengayam",
+        "small onion",
+        "chuvanna ulli"
+      ]
+    },
+    {
+      "name": "spring onion",
+      "kind": "fresh",
+      "group": "aromatic",
+      "aliases": [
+        "scallion",
+        "green onion",
+        "spring onion greens"
+      ]
+    },
+    {
+      "name": "spinach",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "palak",
+        "keerai",
+        "pasalai keerai"
+      ]
+    },
+    {
+      "name": "fenugreek leaf",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "methi",
+        "vendhaya keerai",
+        "menthya soppu",
+        "methi leaves"
+      ]
+    },
+    {
+      "name": "amaranth",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "thandu keerai",
+        "mulai keerai",
+        "chaulai",
+        "thotakura"
+      ]
+    },
+    {
+      "name": "dill",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "sabsige soppu",
+        "suva bhaji",
+        "sepu keerai",
+        "shepu"
+      ]
+    },
+    {
+      "name": "mustard greens",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "sarson ka saag",
+        "sarson leaves"
+      ]
+    },
+    {
+      "name": "coriander leaf",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "dhania",
+        "kothamalli",
+        "cilantro",
+        "kothimbir",
+        "coriander"
+      ]
+    },
+    {
+      "name": "mint",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "pudina",
+        "mentha",
+        "pudhina"
+      ]
+    },
+    {
+      "name": "drumstick leaf",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "murungai keerai",
+        "nuggekai soppu"
+      ]
+    },
+    {
+      "name": "sorrel leaf",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "gongura",
+        "pulicha keerai",
+        "ambadi"
+      ]
+    },
+    {
+      "name": "colocasia leaf",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "arbi patta",
+        "seppankizhangu keerai",
+        "chembu thal"
+      ]
+    },
+    {
+      "name": "malabar spinach",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": [
+        "basella",
+        "pasalai keerai vine"
+      ]
+    },
+    {
+      "name": "kale",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": []
+    },
+    {
+      "name": "lettuce",
+      "kind": "fresh",
+      "group": "leafy",
+      "aliases": []
+    },
+    {
+      "name": "chickpea",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "chole",
+        "kabuli chana",
+        "kondakadalai",
+        "senagalu",
+        "white chana"
+      ]
+    },
+    {
+      "name": "black chickpea",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "kala chana",
+        "karuppu kondakadalai"
+      ]
+    },
+    {
+      "name": "rajma",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "kidney bean",
+        "rajma beans"
+      ]
+    },
+    {
+      "name": "black-eyed pea",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "lobia",
+        "karamani",
+        "alasande",
+        "chawli"
+      ]
+    },
+    {
+      "name": "whole moong",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "green gram",
+        "pachai payaru",
+        "hesaru kalu"
+      ]
+    },
+    {
+      "name": "whole urad",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "black gram whole",
+        "ulundu whole"
+      ]
+    },
+    {
+      "name": "horse gram",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "kollu",
+        "kulthi",
+        "ulavalu"
+      ]
+    },
+    {
+      "name": "moth bean",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "matki"
+      ]
+    },
+    {
+      "name": "val",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "field bean",
+        "vaal",
+        "mochai",
+        "surti val"
+      ]
+    },
+    {
+      "name": "dried peas",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "vatana",
+        "safed vatana",
+        "white peas"
+      ]
+    },
+    {
+      "name": "sprouts",
+      "kind": "fresh",
+      "group": "legume",
+      "aliases": [
+        "mixed sprouts",
+        "molakattiya payaru"
+      ]
+    },
+    {
+      "name": "paneer",
+      "kind": "fresh",
+      "group": "protein",
+      "aliases": [
+        "panner",
+        "paner",
+        "cottage cheese"
+      ]
+    },
+    {
+      "name": "tofu",
+      "kind": "fresh",
+      "group": "protein",
+      "aliases": [
+        "soya paneer"
+      ]
+    },
+    {
+      "name": "egg",
+      "kind": "fresh",
+      "group": "protein",
+      "aliases": [
+        "anda",
+        "muttai",
+        "gudde",
+        "kodi guddu"
+      ]
+    },
+    {
+      "name": "soya chunks",
+      "kind": "fresh",
+      "group": "protein",
+      "aliases": [
+        "meal maker",
+        "soya bean chunks",
+        "nutrela"
+      ]
+    },
+    {
+      "name": "mushroom",
+      "kind": "fresh",
+      "group": "protein",
+      "aliases": [
+        "kaalan",
+        "kalan mushroom",
+        "button mushroom"
+      ]
+    },
+    {
+      "name": "coconut",
+      "kind": "fresh",
+      "group": "other",
+      "aliases": [
+        "thengai",
+        "kobbari",
+        "kayi",
+        "nariyal",
+        "fresh coconut"
+      ]
+    },
+    {
+      "name": "cream",
+      "kind": "fresh",
+      "group": "dairy",
+      "aliases": [
+        "malai",
+        "fresh cream"
+      ]
+    },
+    {
+      "name": "cheese",
+      "kind": "fresh",
+      "group": "dairy",
+      "aliases": []
+    },
+    {
+      "name": "plantain flower",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "vazhaipoo",
+        "banana flower"
+      ]
+    },
+    {
+      "name": "plantain stem",
+      "kind": "fresh",
+      "group": "vegetable",
+      "aliases": [
+        "vazhaithandu",
+        "banana stem"
+      ]
+    },
+    {
+      "name": "mango",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "aam",
+        "mamidi pandu",
+        "maampazham"
+      ]
+    },
+    {
+      "name": "banana",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "kela",
+        "vazhaipazham",
+        "arati pandu"
+      ]
+    },
+    {
+      "name": "papaya",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "papita",
+        "pappali"
+      ]
+    },
+    {
+      "name": "pineapple",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "ananas",
+        "annasi pazham"
+      ]
+    },
+    {
+      "name": "apple",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "seb"
+      ]
+    },
+    {
+      "name": "grapes",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "angur",
+        "draksha"
+      ]
+    },
+    {
+      "name": "watermelon",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "tarbooz",
+        "dabosa pazham"
+      ]
+    },
+    {
+      "name": "pomegranate",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "anar",
+        "madhulai"
+      ]
+    },
+    {
+      "name": "lemon",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "nimbu",
+        "elumichai",
+        "nimbe hannu"
+      ]
+    },
+    {
+      "name": "lime",
+      "kind": "fresh",
+      "group": "fruit",
+      "aliases": [
+        "kaghzi nimbu"
+      ]
+    },
+    {
+      "name": "basil",
+      "kind": "fresh",
+      "group": "herb",
+      "aliases": [
+        "tulsi"
+      ]
+    }
+  ],
+  "forms": [
+    {
+      "name": "paratha",
+      "label": "Flatbread",
+      "aliases": [
+        "parantha",
+        "parotta"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "roti",
+      "label": "Flatbread",
+      "aliases": [
+        "chapati",
+        "phulka"
+      ],
+      "effort": 1,
+      "minutes": 15,
+      "mealSlots": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "thepla",
+      "label": "Spiced flatbread",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "poori",
+      "label": "Deep-fried bread",
+      "aliases": [
+        "puri"
+      ],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "dosa",
+      "label": "Crepe",
+      "aliases": [
+        "dosai",
+        "dose"
+      ],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "idli",
+      "label": "Steamed cake",
+      "aliases": [
+        "idly"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "uttapam",
+      "label": "Thick pancake",
+      "aliases": [
+        "uthappam",
+        "oothappam"
+      ],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "appam",
+      "label": "Rice pancake",
+      "aliases": [
+        "palappam"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "adai",
+      "label": "Lentil crepe",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "pesarattu",
+      "label": "Moong dal crepe",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "upma",
+      "label": "Savory semolina",
+      "aliases": [
+        "uppma",
+        "uppittu",
+        "upittu"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "breakfast"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "poha",
+      "label": "Flattened rice dish",
+      "aliases": [],
+      "effort": 1,
+      "minutes": 15,
+      "mealSlots": [
+        "breakfast"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "pongal",
+      "label": "One-pot rice-lentil",
+      "aliases": [
+        "ven pongal",
+        "khara pongal"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "khichdi",
+      "label": "One-pot rice-lentil",
+      "aliases": [
+        "kichdi",
+        "khichuri"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "curd rice",
+      "label": "Rice dish",
+      "aliases": [
+        "thayir sadam",
+        "dahi chawal",
+        "mosaru anna"
+      ],
+      "effort": 1,
+      "minutes": 15,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "rice",
+      "label": "Plain rice",
+      "aliases": [
+        "anna",
+        "bhat"
+      ],
+      "effort": 1,
+      "minutes": 25,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "pulao",
+      "label": "Rice dish",
+      "aliases": [
+        "pilaf",
+        "pulav"
+      ],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "biryani",
+      "label": "Rice dish",
+      "aliases": [
+        "briyani",
+        "biriyani"
+      ],
+      "effort": 3,
+      "minutes": 60,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "fried rice",
+      "label": "Rice dish",
+      "aliases": [],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "lemon rice",
+      "label": "Rice dish",
+      "aliases": [
+        "chitranna",
+        "elumichai sadam"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "tamarind rice",
+      "label": "Rice dish",
+      "aliases": [
+        "puliyodarai",
+        "puliyogare",
+        "chintapandu pulihora"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "coconut rice",
+      "label": "Rice dish",
+      "aliases": [
+        "thengai sadam",
+        "kobbari annam"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "tomato rice",
+      "label": "Rice dish",
+      "aliases": [
+        "thakkali sadam",
+        "tomato bath"
+      ],
+      "effort": 1,
+      "minutes": 25,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "bisi bele bath",
+      "label": "Rice dish",
+      "aliases": [
+        "bisibelebath",
+        "bisi bele huli anna"
+      ],
+      "effort": 3,
+      "minutes": 45,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "sambar rice",
+      "label": "Rice dish",
+      "aliases": [
+        "sambar sadam"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "vangi bath",
+      "label": "Rice dish",
+      "aliases": [
+        "vangibath",
+        "brinjal rice"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "gravy",
+      "label": "Gravy",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "masala",
+      "label": "Gravy",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "curry",
+      "label": "Curry",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "kurma",
+      "label": "Coconut gravy",
+      "aliases": [
+        "korma"
+      ],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "kuzhambu",
+      "label": "South Indian gravy",
+      "aliases": [
+        "kulambu",
+        "kuzhambhu"
+      ],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "sambar",
+      "label": "Lentil vegetable stew",
+      "aliases": [
+        "sambhar"
+      ],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "rasam",
+      "label": "Spiced soup",
+      "aliases": [
+        "saaru",
+        "charu"
+      ],
+      "effort": 1,
+      "minutes": 25,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "dal",
+      "label": "Lentil stew",
+      "aliases": [
+        "dal fry",
+        "dal tadka",
+        "dal makhani"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "kootu",
+      "label": "Lentil vegetable stew",
+      "aliases": [
+        "koottu"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "poriyal",
+      "label": "Dry stir-fry",
+      "aliases": [],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "thoran",
+      "label": "Dry stir-fry",
+      "aliases": [
+        "thuvaran"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "palya",
+      "label": "Dry stir-fry",
+      "aliases": [],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "usili",
+      "label": "Dry lentil crumble",
+      "aliases": [
+        "paruppu usili"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "varuval",
+      "label": "Fry / roast",
+      "aliases": [
+        "vepudu",
+        "roast"
+      ],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "sabzi",
+      "label": "Dry veg",
+      "aliases": [
+        "sabji",
+        "bhaji",
+        "subzi"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "bharta",
+      "label": "Mashed roasted veg",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "kofta",
+      "label": "Fried dumpling in gravy",
+      "aliases": [],
+      "effort": 3,
+      "minutes": 45,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "tikka",
+      "label": "Grilled / roasted",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "bhurji",
+      "label": "Scramble",
+      "aliases": [
+        "egg bhurji"
+      ],
+      "effort": 1,
+      "minutes": 15,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "omelette",
+      "label": "Egg dish",
+      "aliases": [
+        "omlette",
+        "omelet"
+      ],
+      "effort": 1,
+      "minutes": 10,
+      "mealSlots": [
+        "breakfast"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "cutlet",
+      "label": "Fried patty",
+      "aliases": [
+        "tikki"
+      ],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "pakora",
+      "label": "Fritter",
+      "aliases": [
+        "pakoda",
+        "bajji",
+        "bonda"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "vada",
+      "label": "Fritter",
+      "aliases": [
+        "vadai",
+        "garelu"
+      ],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "samosa",
+      "label": "Fried pastry",
+      "aliases": [],
+      "effort": 3,
+      "minutes": 45,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "chaat",
+      "label": "Snack",
+      "aliases": [],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "salad",
+      "label": "Salad",
+      "aliases": [
+        "kosambari",
+        "kosumalli"
+      ],
+      "effort": 1,
+      "minutes": 10,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "raita",
+      "label": "Yogurt salad",
+      "aliases": [
+        "pachadi",
+        "thayir pachadi"
+      ],
+      "effort": 1,
+      "minutes": 10,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "chutney",
+      "label": "Chutney",
+      "aliases": [
+        "thogayal",
+        "chatni"
+      ],
+      "effort": 1,
+      "minutes": 15,
+      "mealSlots": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": true
+    },
+    {
+      "name": "pickle",
+      "label": "Pickle",
+      "aliases": [
+        "achar",
+        "urugai",
+        "avakaya"
+      ],
+      "effort": 3,
+      "minutes": 60,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "papad",
+      "label": "Papad",
+      "aliases": [
+        "papadum",
+        "appalam"
+      ],
+      "effort": 1,
+      "minutes": 5,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "soup",
+      "label": "Soup",
+      "aliases": [
+        "shorba",
+        "ishtu"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "avial",
+      "label": "Mixed vegetable curry",
+      "aliases": [
+        "aviyal"
+      ],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "erissery",
+      "label": "Vegetable curry",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "pulissery",
+      "label": "Yogurt curry",
+      "aliases": [
+        "moru curry"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "lunch"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "kadhi",
+      "label": "Yogurt curry",
+      "aliases": [
+        "kadi"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "lunch",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "pav bhaji",
+      "label": "Mashed veg with bread",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "halwa",
+      "label": "Sweet",
+      "aliases": [
+        "kesari",
+        "sheera"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "payasam",
+      "label": "Sweet pudding",
+      "aliases": [
+        "kheer",
+        "paramanna"
+      ],
+      "effort": 2,
+      "minutes": 35,
+      "mealSlots": [
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "ladoo",
+      "label": "Sweet ball",
+      "aliases": [
+        "laddu",
+        "ladu"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "burfi",
+      "label": "Sweet fudge",
+      "aliases": [
+        "barfi"
+      ],
+      "effort": 3,
+      "minutes": 45,
+      "mealSlots": [
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "noodles",
+      "label": "Noodles dish",
+      "aliases": [
+        "hakka noodles",
+        "chow mein"
+      ],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "pasta",
+      "label": "Pasta dish",
+      "aliases": [
+        "macaroni dish"
+      ],
+      "effort": 1,
+      "minutes": 25,
+      "mealSlots": [
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "sundal",
+      "label": "Steamed legume snack",
+      "aliases": [],
+      "effort": 1,
+      "minutes": 20,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "bhel",
+      "label": "Puffed rice snack",
+      "aliases": [
+        "bhel puri",
+        "bhelpuri"
+      ],
+      "effort": 1,
+      "minutes": 10,
+      "mealSlots": [
+        "breakfast"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "dhokla",
+      "label": "Steamed savory cake",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "breakfast"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "idiyappam",
+      "label": "String hopper",
+      "aliases": [
+        "string hopper",
+        "nool puttu"
+      ],
+      "effort": 2,
+      "minutes": 30,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "puttu",
+      "label": "Steamed rice-coconut cylinder",
+      "aliases": [],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "kozhukattai",
+      "label": "Steamed rice dumpling",
+      "aliases": [
+        "modak",
+        "kudumu",
+        "pidi kozhukattai"
+      ],
+      "effort": 3,
+      "minutes": 45,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    },
+    {
+      "name": "paniyaram",
+      "label": "Fried/steamed batter balls",
+      "aliases": [
+        "appe",
+        "gunta ponganalu"
+      ],
+      "effort": 2,
+      "minutes": 25,
+      "mealSlots": [
+        "breakfast",
+        "dinner"
+      ],
+      "isBaseCandidate": false
+    }
+  ]
+}

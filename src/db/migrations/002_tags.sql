@@ -1,0 +1,13 @@
+CREATE TABLE tag (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE dish_tag (
+  dish_id INTEGER NOT NULL REFERENCES dish(id) ON DELETE CASCADE,
+  tag_id INTEGER NOT NULL REFERENCES tag(id) ON DELETE CASCADE,
+  PRIMARY KEY (dish_id, tag_id)
+);
+
+CREATE INDEX dish_tag_tag ON dish_tag(tag_id);

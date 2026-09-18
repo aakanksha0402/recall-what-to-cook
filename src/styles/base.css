@@ -1,0 +1,294 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+p {
+  margin: 0 0 var(--space-3);
+}
+
+a {
+  color: var(--color-accent);
+  text-underline-offset: 3px;
+}
+
+ol,
+ul {
+  margin: 0;
+}
+
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* — prototype utility classes — */
+.k {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+.k-ink {
+  color: var(--color-text);
+}
+.k-warn {
+  color: var(--color-accent-2-700);
+}
+.mut {
+  color: var(--color-muted);
+}
+.warn {
+  color: var(--color-accent-2-700);
+}
+.acc {
+  color: var(--color-accent);
+}
+.row {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.dsh {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+.link {
+  color: var(--color-accent);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.link:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* — buttons — */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+.btn-primary:active {
+  background: var(--color-accent-700);
+}
+.btn-secondary {
+  border-color: var(--color-divider);
+}
+.btn-secondary:active {
+  background: color-mix(in srgb, var(--color-text) 14%, transparent);
+}
+.btn-ghost {
+  color: var(--color-accent);
+  padding-inline: var(--space-1);
+}
+.btn-ghost:active {
+  background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+.btn-block {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+/* — forms — */
+.input {
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 16px; /* ≥16px stops iOS zooming the page on focus */
+  color: var(--color-text);
+  caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.input::placeholder {
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  opacity: 1;
+}
+.input:focus-visible {
+  border-color: var(--color-accent);
+  outline-offset: 0;
+}
+textarea.input {
+  resize: vertical;
+}
+
+/* — tags / chips — */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+  border-radius: calc(var(--radius-md) * 0.75);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.tag-accent {
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.tag-accent-2 {
+  background: var(--color-accent-2-100);
+  color: var(--color-accent-2-800);
+}
+.tag-neutral {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-800);
+}
+.tag-outline {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.tag-outline-muted {
+  border-color: var(--color-divider);
+  color: var(--color-muted);
+}
+
+/* — the plate numeral (three-plate CMYK misregistration, from the design system) — */
+.cmyk-num {
+  --cmyk-num-ground: var(--color-bg);
+  position: relative;
+  width: fit-content;
+  line-height: 0.9;
+  font-feature-settings: 'pnum' 1;
+  background: var(--cmyk-num-ground);
+  padding: 0.12em;
+  margin: -0.12em;
+}
+.cmyk-num .paper {
+  color: var(--color-bg);
+  text-shadow:
+    0.036em 0.025em 0 var(--color-bg),
+    -0.031em -0.023em 0 var(--color-bg);
+}
+.cmyk-num .plate {
+  position: absolute;
+  inset: 0.12em;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cmyk-num .plate-c {
+  color: var(--color-accent);
+}
+.cmyk-num .plate-m {
+  color: var(--color-accent-2);
+  translate: 0.036em 0.025em;
+}
+.cmyk-num .plate-y {
+  color: var(--color-process-yellow);
+  translate: -0.031em -0.023em;
+}
+
+/* — layout helpers — */
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+.hstack {
+  display: flex;
+  align-items: center;
+}
+.between {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.hscroll {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -22px;
+  padding: 0 22px;
+}
+.hscroll::-webkit-scrollbar {
+  display: none;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+.fixed {
+  flex: 0 0 auto;
+}
