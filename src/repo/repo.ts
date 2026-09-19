@@ -63,6 +63,28 @@ function must<T>(res: { data: T | null; error: { message: string } | null }, wha
   return res.data as T;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Right after sign-in, Supabase's auth node can stamp a token a second ahead of its API
+ * node's clock, which then rejects it as "JWT issued at future". It clears itself within
+ * seconds, so transient auth rejections are retried with a short pause.
+ */
+async function withRetry<T>(fn: () => Promise<T>, what: string): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastError = e;
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!/issued at future|jwt|401/i.test(msg)) throw e;
+      await sleep(1500 * (attempt + 1));
+    }
+  }
+  throw new Error(`${what}: still failing after retries — ${lastError instanceof Error ? lastError.message : String(lastError)}`);
+}
+
 /**
  * The one data-access module. Every screen talks to this; it talks to Supabase.
  * Reads come from one cached snapshot of the user's rows (invalidated on every write)
@@ -101,10 +123,10 @@ export class Repo {
 
   private snap(): Promise<Snapshot> {
     if (!this.snapshot) {
-      this.snapshot = (async () => {
+      this.snapshot = withRetry(async () => {
         const rows = await Promise.all(TABLES.map((t) => this.fetchAll<unknown>(t)));
         return Object.fromEntries(TABLES.map((t, i) => [t, rows[i]])) as unknown as Snapshot;
-      })().catch((e) => {
+      }, 'load').catch((e) => {
         this.snapshot = null;
         throw e;
       });
@@ -127,7 +149,7 @@ export class Repo {
     const version = String(this.lex.ingredients.length);
     if ((await this.setting('lexicon_version')) === version) return;
     const rows = this.lex.ingredients.map((i) => ({ name: i.name, kind: i.kind, aliases: i.aliases }));
-    must(await this.sb.from('ingredient').upsert(rows, { onConflict: 'user_id,name', ignoreDuplicates: true }), 'seed ingredients');
+    await withRetry(async () => must(await this.sb.from('ingredient').upsert(rows, { onConflict: 'user_id,name', ignoreDuplicates: true }), 'seed ingredients'), 'seed');
     await this.setSetting('lexicon_version', version);
   }
 

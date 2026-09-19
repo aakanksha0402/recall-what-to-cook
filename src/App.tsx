@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { registerSW } from 'virtual:pwa-register';
 import { useSession } from './auth/session';
 import type { Plausibility } from './domain/expansion';
@@ -22,6 +22,7 @@ export function App() {
   const session = useSession();
   const [boot, setBoot] = useState<Boot>(null);
   const [needRefresh, setNeedRefresh] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const userId = session?.user.id ?? null;
 
   useEffect(() => {
@@ -52,13 +53,28 @@ export function App() {
     return () => {
       live = false;
     };
-  }, [userId]);
+  }, [userId, attempt]);
 
   if (!supabaseConfigured) return <Splash text="Akku is not configured: VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are missing." warn />;
   if (session === undefined) return <Splash text="Opening…" />;
   if (session === null) return <LoginScreen />;
   if (!boot) return <Splash text="Loading your dishes…" />;
-  if ('error' in boot) return <Splash text={`Akku could not load your data. ${boot.error}`} warn />;
+  if ('error' in boot)
+    return (
+      <Splash text={`Akku could not load your data. ${boot.error}`} warn>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          style={{ marginTop: 16 }}
+          onClick={() => {
+            setBoot(null);
+            setAttempt((n) => n + 1);
+          }}
+        >
+          Try again
+        </button>
+      </Splash>
+    );
   return (
     <RepoProvider repo={boot.repo}>
       <UndoProvider>
@@ -70,13 +86,16 @@ export function App() {
   );
 }
 
-function Splash({ text, warn }: { text: string; warn?: boolean }) {
+function Splash({ text, warn, children }: { text: string; warn?: boolean; children?: ReactNode }) {
   return (
     <div className="app">
       <div className="phone">
         <div className="screen" style={{ display: 'grid', placeItems: 'center' }}>
-          <div className={warn ? 'warn' : 'mut'} style={{ fontSize: 13, textAlign: 'center', maxWidth: 280 }}>
-            {text}
+          <div style={{ textAlign: 'center', maxWidth: 280 }}>
+            <div className={warn ? 'warn' : 'mut'} style={{ fontSize: 13 }}>
+              {text}
+            </div>
+            {children}
           </div>
         </div>
       </div>
