@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { relativeDate } from '../../domain/clock';
+import { useRef, useState } from 'react';
+import { signOut } from '../../auth/session';
+import { relativeDate, nowIso } from '../../domain/clock';
+import { supabase } from '../../lib/supabase';
+import { exportJson, importJson } from '../../repo/backup';
 import { BackButton, Chip, Kicker, Sheet } from '../components/bits';
 import { useQuery, useRepo } from '../context';
 
@@ -11,29 +14,40 @@ export function SettingsScreen() {
   });
   const [addingStaple, setAddingStaple] = useState(false);
   const [allStaples, setAllStaples] = useState(false);
-  const [persisted, setPersisted] = useState<boolean | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    navigator.storage?.persisted?.().then(setPersisted).catch(() => setPersisted(null));
-  }, []);
+  const { data: user } = useQuery(async () => (await supabase.auth.getUser()).data.user);
 
   if (!data) return null;
   const { staples, fresh, settings, lastExport, totals } = data;
   const setNum = (key: string) => (e: React.ChangeEvent<HTMLSelectElement>) => void repo.setSetting(key, e.target.value);
   const run = async (label: string, fn: () => Promise<void>) => {
     setBusy(label);
+    setNotice(null);
     try {
       await fn();
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(null);
     }
   };
+  const onExport = () =>
+    run('export', async () => {
+      await exportJson(repo.sb);
+      await repo.setSetting('last_export_at', nowIso());
+    });
   const onImport = async (file: File | undefined) => {
     if (!file) return;
     if (!window.confirm('Replace everything in Akku with this file? Export first if you are unsure.')) return;
-    await run('import', () => repo.importSqlite(file));
+    await run('import', async () => {
+      const r = await importJson(repo.sb, file);
+      await repo.setSetting('lexicon_version', '');
+      await repo.boot();
+      setNotice(`Imported ${r.dishes} dishes and ${r.cooks} cooks.`);
+    });
+    if (fileRef.current) fileRef.current.value = '';
   };
 
   return (
@@ -101,27 +115,31 @@ export function SettingsScreen() {
         </div>
       </div>
 
-      <Kicker style={{ marginBottom: 12 }}>Your database</Kicker>
+      <Kicker style={{ marginBottom: 12 }}>Your data</Kicker>
       <div className="hstack" style={{ gap: 10, marginBottom: 8 }}>
-        <button type="button" className="btn btn-primary" disabled={!!busy} onClick={() => void run('sqlite', () => repo.exportSqlite())}>
-          Export .sqlite
+        <button type="button" className="btn btn-primary" disabled={!!busy} onClick={() => void onExport()}>
+          {busy === 'export' ? 'Exporting…' : 'Export JSON'}
         </button>
-        <button type="button" className="btn btn-secondary" disabled={!!busy} onClick={() => void run('json', () => repo.exportJson())}>
-          Export JSON
+        <button type="button" className="btn btn-secondary" disabled={!!busy} onClick={() => fileRef.current?.click()}>
+          {busy === 'import' ? 'Importing…' : 'Import'}
         </button>
       </div>
       <div className="mut" style={{ fontSize: 12, marginBottom: 16 }}>
-        {lastExport ? `Last export ${relativeDate(lastExport)}` : 'Never exported'} · {totals.dishes} {totals.dishes === 1 ? 'dish' : 'dishes'}, {totals.cooks} {totals.cooks === 1 ? 'cook' : 'cooks'}. Export is the backup; nothing syncs.
+        {lastExport ? `Last export ${relativeDate(lastExport)}` : 'Never exported'} · {totals.dishes} {totals.dishes === 1 ? 'dish' : 'dishes'}, {totals.cooks} {totals.cooks === 1 ? 'cook' : 'cooks'}. Your data lives under your email and follows you to any device; export is a copy you own.
       </div>
-      <button type="button" className="link" style={{ fontSize: 13, paddingBottom: 10 }} disabled={!!busy} onClick={() => fileRef.current?.click()}>
-        Import a database file
-      </button>
-      <input ref={fileRef} type="file" accept=".sqlite,.sqlite3,.db,application/octet-stream" hidden onChange={(e) => void onImport(e.target.files?.[0])} />
-      <div className="mut" style={{ fontSize: 12, marginTop: 16 }}>
-        {persisted === true ? 'Storage is persistent on this device.' : persisted === false ? 'Storage is not yet marked persistent — add Akku to your home screen and export regularly.' : ''}
-      </div>
-      <div className="mut" style={{ fontSize: 12, marginTop: 8 }}>
-        Open Akku from the home screen icon, not Safari — Safari writes to a different copy of your database.
+      <input ref={fileRef} type="file" accept=".json,application/json" hidden onChange={(e) => void onImport(e.target.files?.[0])} />
+      {notice && (
+        <div className={/Imported/.test(notice) ? 'mut' : 'warn'} style={{ fontSize: 12.5, marginBottom: 16 }}>
+          {notice}
+        </div>
+      )}
+
+      <Kicker style={{ marginBottom: 12 }}>Account</Kicker>
+      <div className="between" style={{ fontSize: 13, paddingBottom: 10 }}>
+        <span className="mut">{user?.email ?? ''}</span>
+        <button type="button" className="link fixed" onClick={() => void signOut()}>
+          Sign out
+        </button>
       </div>
 
       {addingStaple && (

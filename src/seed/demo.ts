@@ -41,11 +41,7 @@ export async function seedDemo(repo: Repo): Promise<void> {
     Chole: [10, 35, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390],
     'Beans paruppu usili': [33, 66, 99],
   };
-  await repo.db.batch((sql) =>
-    Object.entries(cooks).flatMap(([name, days]) =>
-      days.map((d) => sql`INSERT INTO cook_event (dish_id, cooked_at, meal_slot) VALUES (${id(name)}, ${ago(d)}, 'dinner')`),
-    ),
-  );
+  for (const [name, days] of Object.entries(cooks)) for (const d of days) await repo.logCookAt(id(name), ago(d));
 
   const tweaks: Record<string, string[]> = {
     'Vazhakkai varuval': ['Slice thin, salt water first so it does not brown', 'Sambar powder, not chilli powder', 'Shallow fry, do not crowd the pan'],
@@ -55,9 +51,11 @@ export async function seedDemo(repo: Repo): Promise<void> {
     Kadhi: ['Sour curd, the older the better', 'Fried paneer cubes if no pakora'],
     'Methi thepla': ['Curd in the dough, no water', 'Rest 20 minutes or it tears'],
   };
-  for (const [name, lines] of Object.entries(tweaks)) for (const line of lines) await repo.addTweak(id(name), line);
-  // Backdate versions so only "Mushroom masala" reads as tweaked-since-last-cook.
-  await repo.db.sql('UPDATE dish_version SET created_at = ? WHERE dish_id <> ?', ago(400), id('Mushroom masala'));
+  for (const [name, lines] of Object.entries(tweaks)) {
+    for (const line of lines) await repo.addTweak(id(name), line);
+    // Backdate so only "Mushroom masala" reads as tweaked-since-last-cook.
+    if (name !== 'Mushroom masala') await repo.backdateVersions(id(name), ago(400));
+  }
 
   await repo.updateNotes(id('Onion tomato gravy'), 'Half a spoon of sugar if the tomatoes are sour.');
   await repo.updateNotes(id('Ennai kathirikai'), 'Small brinjals only. The big ones go to mush.');

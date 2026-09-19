@@ -1,6 +1,4 @@
-import type { Db, Row } from '../db/client';
-import { exportJson, exportSqlite, importSqlite } from '../db/export';
-import { migrate } from '../db/migrate';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { defaultBaseName, suggestBases, type BaseCandidate, type BaseProposal } from '../domain/baseSuggest';
 import { bucketFor, lastCook, type BucketResult } from '../domain/buckets';
 import { addDays, mealSlotFor, nowIso, startOfMonthIso } from '../domain/clock';
@@ -8,18 +6,22 @@ import { generateProposals, proposalKey, type Plausibility, type Proposal } from
 import { normaliseWord, parseDishName, titleCase, type LexIndex } from '../domain/lexicon';
 import { fillSlots, rankOne, type HomeSlots, type Ranked } from '../domain/ranking';
 import { search as runSearch, type SearchDoc } from '../domain/search';
-import type {
-  CookEvent,
-  Dish,
-  DishFacts,
-  DishIngredient,
-  DishVersion,
-  Ingredient,
-  IngredientKind,
-  MealSlot,
-  Settings,
-  Tag,
-} from '../domain/types';
+import type { CookEvent, Dish, DishFacts, DishVersion, Ingredient, IngredientKind, MealSlot, Settings, Tag } from '../domain/types';
+import {
+  buildFacts,
+  ingredientUse,
+  jsonArray,
+  rowToCook,
+  rowToDish,
+  rowToIngredient,
+  rowToVersion,
+  settingsFrom,
+  tagCounts,
+  type DishRow,
+  type IngredientRow,
+  type Snapshot,
+  type VersionRow,
+} from './facts';
 
 export interface Chip {
   id: number;
@@ -52,14 +54,26 @@ export interface DetailView {
   minutes: number | null;
 }
 
-const NEXT_UP_ID = 1;
 const NOT_TONIGHT_DAYS = 7;
+const PAGE = 1000;
+const TABLES: (keyof Snapshot)[] = ['dish', 'ingredient', 'dish_ingredient', 'dish_version', 'cook_event', 'tag', 'dish_tag', 'suppression', 'pantry', 'setting'];
 
+function must<T>(res: { data: T | null; error: { message: string } | null }, what: string): T {
+  if (res.error) throw new Error(`${what}: ${res.error.message}`);
+  return res.data as T;
+}
+
+/**
+ * The one data-access module. Every screen talks to this; it talks to Supabase.
+ * Reads come from one cached snapshot of the user's rows (invalidated on every write)
+ * and are assembled in memory — the data is tiny.
+ */
 export class Repo {
   private listeners = new Set<() => void>();
+  private snapshot: Promise<Snapshot> | null = null;
 
   constructor(
-    readonly db: Db,
+    readonly sb: SupabaseClient,
     readonly lex: LexIndex,
     readonly plaus: Plausibility,
   ) {}
@@ -70,237 +84,183 @@ export class Repo {
   }
 
   private changed() {
+    this.snapshot = null;
     for (const fn of this.listeners) fn();
   }
 
-  private q<T extends Row = Row>(sql: string, ...params: unknown[]): Promise<T[]> {
-    return this.db.sql<T>(sql, ...params);
+  // ── loading ─────────────────────────────────────────────────────────────
+
+  private async fetchAll<T>(table: string): Promise<T[]> {
+    const out: T[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const page = must(await this.sb.from(table).select('*').range(from, from + PAGE - 1), `load ${table}`) as T[];
+      out.push(...page);
+      if (page.length < PAGE) return out;
+    }
+  }
+
+  private snap(): Promise<Snapshot> {
+    if (!this.snapshot) {
+      this.snapshot = (async () => {
+        const rows = await Promise.all(TABLES.map((t) => this.fetchAll<unknown>(t)));
+        return Object.fromEntries(TABLES.map((t, i) => [t, rows[i]])) as unknown as Snapshot;
+      })().catch((e) => {
+        this.snapshot = null;
+        throw e;
+      });
+    }
+    return this.snapshot;
+  }
+
+  async loadFacts(now = new Date()): Promise<Map<number, DishFacts>> {
+    return buildFacts(await this.snap(), now);
   }
 
   // ── boot ────────────────────────────────────────────────────────────────
 
   async boot(): Promise<void> {
-    await migrate(this.db);
     await this.seedIngredients();
     await this.decayPantry();
   }
 
   private async seedIngredients(): Promise<void> {
     const version = String(this.lex.ingredients.length);
-    const [row] = await this.q<{ value: string }>(`SELECT value FROM setting WHERE key = 'lexicon_version'`);
-    if (row?.value === version) return;
-    await this.db.batch((sql) => [
-      ...this.lex.ingredients.map(
-        (i) => sql`INSERT OR IGNORE INTO ingredient (name, kind, aliases) VALUES (${i.name}, ${i.kind}, ${JSON.stringify(i.aliases)})`,
-      ),
-      sql`INSERT OR REPLACE INTO setting (key, value) VALUES ('lexicon_version', ${version})`,
-    ]);
+    if ((await this.setting('lexicon_version')) === version) return;
+    const rows = this.lex.ingredients.map((i) => ({ name: i.name, kind: i.kind, aliases: i.aliases }));
+    must(await this.sb.from('ingredient').upsert(rows, { onConflict: 'user_id,name', ignoreDuplicates: true }), 'seed ingredients');
+    await this.setSetting('lexicon_version', version);
   }
 
   // ── settings ────────────────────────────────────────────────────────────
 
   async settings(): Promise<Settings> {
-    const rows = await this.q<{ key: string; value: string }>('SELECT key, value FROM setting');
-    const m = new Map(rows.map((r) => [r.key, r.value]));
-    const num = (k: string, d: number) => Number(m.get(k) ?? d);
-    return {
-      freshDays: num('fresh_days', 5),
-      suppressDays: num('suppress_days', 5),
-      forgottenDays: num('forgotten_days', 60),
-      weekendRelax: (m.get('weekend_relax') ?? '1') === '1',
-    };
+    return settingsFrom((await this.snap()).setting);
   }
 
   async setting(key: string): Promise<string | null> {
-    const [row] = await this.q<{ value: string }>('SELECT value FROM setting WHERE key = ?', key);
-    return row?.value ?? null;
+    return (await this.snap()).setting.find((s) => s.key === key)?.value ?? null;
   }
 
   async setSetting(key: string, value: string): Promise<void> {
-    await this.q('INSERT OR REPLACE INTO setting (key, value) VALUES (?, ?)', key, value);
+    must(await this.sb.from('setting').upsert({ key, value }, { onConflict: 'user_id,key' }), 'save setting');
     this.changed();
   }
 
-  // ── facts: everything the engines need, in six queries ──────────────────
-
-  async loadFacts(now = new Date()): Promise<Map<number, DishFacts>> {
-    const dishes = (await this.q('SELECT * FROM dish ORDER BY name COLLATE NOCASE')).map(rowToDish);
-    const facts = new Map<number, DishFacts>();
-    for (const d of dishes) {
-      facts.set(d.id, {
-        dish: d,
-        cookDates: [],
-        childCookDates: [],
-        ingredients: [],
-        tags: [],
-        currentVersion: null,
-        versionCount: 0,
-        suppressedUntil: null,
-      });
-    }
-    const byId = (id: unknown) => facts.get(Number(id));
-
-    const cooks = await this.q<{ dish_id: number; cooked_at: string; base_id: number | null }>(
-      'SELECT c.dish_id, c.cooked_at, d.base_id FROM cook_event c JOIN dish d ON d.id = c.dish_id ORDER BY c.cooked_at',
-    );
-    for (const c of cooks) {
-      byId(c.dish_id)?.cookDates.push(c.cooked_at);
-      if (c.base_id !== null) byId(c.base_id)?.childCookDates.push(c.cooked_at);
-    }
-
-    const ings = await this.q<{ dish_id: number; depth: number; id: number; name: string; kind: IngredientKind; aliases: string; role: DishIngredient['role'] }>(
-      `WITH RECURSIVE chain(dish_id, anc_id, depth) AS (
-         SELECT id, id, 0 FROM dish
-         UNION ALL
-         SELECT c.dish_id, d.base_id, c.depth + 1 FROM chain c JOIN dish d ON d.id = c.anc_id WHERE d.base_id IS NOT NULL AND c.depth < 8
-       )
-       SELECT c.dish_id, c.depth, i.id, i.name, i.kind, i.aliases, di.role
-       FROM chain c JOIN dish_ingredient di ON di.dish_id = c.anc_id JOIN ingredient i ON i.id = di.ingredient_id
-       ORDER BY c.dish_id, c.depth, i.name`,
-    );
-    for (const r of ings) {
-      const f = byId(r.dish_id);
-      if (!f || f.ingredients.some((x) => x.id === Number(r.id))) continue;
-      f.ingredients.push({ id: Number(r.id), name: r.name, kind: r.kind, aliases: parseJson(r.aliases, []), role: r.role, inherited: Number(r.depth) > 0 });
-    }
-
-    const tags = await this.q<{ dish_id: number; name: string }>(
-      'SELECT dt.dish_id, t.name FROM dish_tag dt JOIN tag t ON t.id = dt.tag_id ORDER BY t.name COLLATE NOCASE',
-    );
-    for (const t of tags) byId(t.dish_id)?.tags.push(t.name);
-
-    const versions = await this.q('SELECT * FROM dish_version ORDER BY dish_id, n');
-    for (const r of versions) {
-      const v = rowToVersion(r);
-      const f = facts.get(v.dishId);
-      if (!f) continue;
-      f.versionCount++;
-      if (v.isCurrent) f.currentVersion = v;
-    }
-
-    const sup = await this.q<{ dish_id: number; until: string }>('SELECT dish_id, until FROM suppression WHERE until > ?', now.toISOString());
-    for (const s of sup) {
-      const f = byId(s.dish_id);
-      if (f) f.suppressedUntil = s.until;
-    }
-    return facts;
-  }
-
   async why(f: DishFacts, now = new Date()): Promise<BucketResult> {
-    const settings = await this.settings();
-    return whyFor(f, settings, now);
+    return whyFor(f, await this.settings(), now);
   }
 
   // ── home ────────────────────────────────────────────────────────────────
 
   async home(now = new Date(), slotOverride?: MealSlot): Promise<HomeView> {
-    const [facts, settings, have, nextUp] = await Promise.all([this.loadFacts(now), this.settings(), this.pantryHave(), this.nextUpDish()]);
+    const snap = await this.snap();
+    const facts = buildFacts(snap, now);
+    const settings = settingsFrom(snap.setting);
+    const have = await this.pantryHave();
+    const nextUp = await this.nextUpDish();
     const slot = slotOverride ?? mealSlotFor(now);
     const haveNames = new Set(have.map((h) => h.name));
     const ranked: Ranked[] = [];
     for (const f of facts.values()) ranked.push(rankOne(f, { now, slot, have: haveNames, settings }, this.minutesFor(f.dish.form)));
     const slots = fillSlots(ranked);
-    return { ...slots, chips: await this.chips(facts, haveNames), nextUp, slot };
+    return { ...slots, chips: this.chips(facts, have), nextUp, slot };
   }
 
   private minutesFor(form: string | null): number | null {
     return form ? (this.lex.formByAlias.get(normaliseWord(form))?.minutes ?? null) : null;
   }
 
-  private async chips(facts: Map<number, DishFacts>, haveNames: Set<string>): Promise<Chip[]> {
-    const counts = new Map<number, { name: string; n: number }>();
-    for (const f of facts.values()) {
-      if (f.dish.status === 'retired') continue;
-      for (const i of f.ingredients) {
-        if (i.kind !== 'fresh') continue;
-        const c = counts.get(i.id) ?? { name: i.name, n: 0 };
-        c.n++;
-        counts.set(i.id, c);
-      }
-    }
-    const have = await this.pantryHave();
-    for (const h of have) if (!counts.has(h.id)) counts.set(h.id, { name: h.name, n: 0 });
-    return [...counts.entries()]
-      .map(([id, c]) => ({ id, name: c.name, have: haveNames.has(c.name), dishes: c.n }))
+  private chips(facts: Map<number, DishFacts>, have: Ingredient[]): Chip[] {
+    const haveIds = new Set(have.map((h) => h.id));
+    const use = ingredientUse(facts);
+    const byId = new Map(use.map((u) => [u.id, u]));
+    for (const h of have) if (!byId.has(h.id)) byId.set(h.id, { id: h.id, name: h.name, dishes: 0 });
+    return [...byId.values()]
+      .map((u) => ({ id: u.id, name: u.name, have: haveIds.has(u.id), dishes: u.dishes }))
       .sort((a, b) => Number(b.have) - Number(a.have) || b.dishes - a.dishes || a.name.localeCompare(b.name))
       .slice(0, 12);
   }
 
-  // ── pantry ──────────────────────────────────────────────────────────────
+  // ── pantry & ingredients ────────────────────────────────────────────────
 
   async pantryHave(): Promise<Ingredient[]> {
-    const rows = await this.q(
-      `SELECT i.* FROM pantry p JOIN ingredient i ON i.id = p.ingredient_id WHERE p.state = 'have' ORDER BY i.name COLLATE NOCASE`,
-    );
-    return rows.map(rowToIngredient);
+    const snap = await this.snap();
+    const have = new Set(snap.pantry.filter((p) => p.state === 'have').map((p) => p.ingredient_id));
+    return snap.ingredient
+      .filter((i) => have.has(i.id))
+      .map(rowToIngredient)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   async togglePantry(ingredientId: number): Promise<void> {
-    const [row] = await this.q('SELECT ingredient_id FROM pantry WHERE ingredient_id = ?', ingredientId);
-    if (row) await this.q('DELETE FROM pantry WHERE ingredient_id = ?', ingredientId);
-    else await this.q(`INSERT INTO pantry (ingredient_id, state, updated_at) VALUES (?, 'have', ?)`, ingredientId, nowIso());
+    const snap = await this.snap();
+    if (snap.pantry.some((p) => p.ingredient_id === ingredientId)) {
+      must(await this.sb.from('pantry').delete().eq('ingredient_id', ingredientId), 'pantry');
+    } else {
+      must(await this.sb.from('pantry').insert({ ingredient_id: ingredientId, state: 'have', updated_at: nowIso() }), 'pantry');
+    }
     this.changed();
   }
 
   private async decayPantry(): Promise<void> {
     const { freshDays } = await this.settings();
-    await this.q('DELETE FROM pantry WHERE updated_at < ?', addDays(new Date(), -freshDays).toISOString());
+    const cutoff = addDays(new Date(), -freshDays).toISOString();
+    const stale = (await this.snap()).pantry.filter((p) => p.updated_at < cutoff);
+    if (!stale.length) return;
+    must(await this.sb.from('pantry').delete().lt('updated_at', cutoff), 'pantry decay');
+    this.changed();
   }
 
   async freshIngredients(): Promise<Ingredient[]> {
-    return (await this.q(`SELECT * FROM ingredient WHERE kind = 'fresh' ORDER BY name COLLATE NOCASE`)).map(rowToIngredient);
+    return (await this.snap()).ingredient
+      .filter((i) => i.kind === 'fresh')
+      .map(rowToIngredient)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   async staples(): Promise<Ingredient[]> {
-    return (await this.q(`SELECT * FROM ingredient WHERE kind = 'staple' ORDER BY name COLLATE NOCASE`)).map(rowToIngredient);
+    return (await this.snap()).ingredient
+      .filter((i) => i.kind === 'staple')
+      .map(rowToIngredient)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   async setIngredientKind(id: number, kind: IngredientKind): Promise<void> {
-    await this.q('UPDATE ingredient SET kind = ? WHERE id = ?', kind, id);
+    must(await this.sb.from('ingredient').update({ kind }).eq('id', id), 'ingredient kind');
     this.changed();
   }
 
   async ensureIngredient(name: string, kind: IngredientKind = 'fresh'): Promise<Ingredient> {
     const clean = name.trim().toLowerCase();
-    const [existing] = await this.q('SELECT * FROM ingredient WHERE name = ? COLLATE NOCASE', clean);
+    const existing = (await this.snap()).ingredient.find((i) => i.name.toLowerCase() === clean);
     if (existing) return rowToIngredient(existing);
-    await this.q(`INSERT INTO ingredient (name, kind, aliases) VALUES (?, ?, '[]')`, clean, kind);
-    const [row] = await this.q('SELECT * FROM ingredient WHERE name = ? COLLATE NOCASE', clean);
-    return rowToIngredient(row!);
+    const row = must(await this.sb.from('ingredient').insert({ name: clean, kind, aliases: [] }).select('*').single(), 'add ingredient') as IngredientRow;
+    this.changed();
+    return rowToIngredient(row);
   }
 
   /** Ingredient chip row on Dishes — ordered by how many dishes each one unlocks. */
   async ingredientRow(): Promise<Chip[]> {
-    const rows = await this.q<{ id: number; name: string; n: number }>(
-      `WITH RECURSIVE chain(dish_id, anc_id, depth) AS (
-         SELECT id, id, 0 FROM dish WHERE status <> 'retired'
-         UNION ALL
-         SELECT c.dish_id, d.base_id, c.depth + 1 FROM chain c JOIN dish d ON d.id = c.anc_id WHERE d.base_id IS NOT NULL AND c.depth < 8
-       )
-       SELECT i.id, i.name, COUNT(DISTINCT c.dish_id) AS n
-       FROM chain c JOIN dish_ingredient di ON di.dish_id = c.anc_id JOIN ingredient i ON i.id = di.ingredient_id
-       WHERE i.kind = 'fresh'
-       GROUP BY i.id ORDER BY n DESC, i.name COLLATE NOCASE`,
-    );
+    const facts = await this.loadFacts();
     const have = new Set((await this.pantryHave()).map((h) => h.id));
-    return rows.map((r) => ({ id: Number(r.id), name: r.name, have: have.has(Number(r.id)), dishes: Number(r.n) }));
+    return ingredientUse(facts).map((u) => ({ id: u.id, name: u.name, have: have.has(u.id), dishes: u.dishes }));
   }
 
   // ── dishes ──────────────────────────────────────────────────────────────
 
   async dish(id: number): Promise<Dish | null> {
-    const [row] = await this.q('SELECT * FROM dish WHERE id = ?', id);
-    return row ? rowToDish(row) : null;
+    const r = (await this.snap()).dish.find((d) => d.id === id);
+    return r ? rowToDish(r) : null;
   }
 
   async findDishByName(name: string): Promise<Dish | null> {
-    const [row] = await this.q('SELECT * FROM dish WHERE name = ? COLLATE NOCASE', name.trim());
-    return row ? rowToDish(row) : null;
+    const clean = name.trim().toLowerCase();
+    const r = (await this.snap()).dish.find((d) => d.name.toLowerCase() === clean);
+    return r ? rowToDish(r) : null;
   }
 
   async dishCount(): Promise<number> {
-    const [row] = await this.q<{ n: number }>(`SELECT COUNT(*) AS n FROM dish WHERE status <> 'retired'`);
-    return Number(row?.n ?? 0);
+    return (await this.snap()).dish.filter((d) => d.status !== 'retired').length;
   }
 
   /** Batch entry: one dish per line, ingredients and tags from the name. Returns ids (existing ones reused). */
@@ -313,7 +273,7 @@ export class Repo {
       const existing = await this.findDishByName(parsed.name);
       if (existing) {
         ids.push(existing.id);
-        for (const t of parsed.tags) await this.addTag(existing.id, t, false);
+        for (const t of parsed.tags) await this.addTag(existing.id, t);
         continue;
       }
       const id = await this.insertDish({
@@ -326,7 +286,7 @@ export class Repo {
         confirmed: true,
         ingredientNames: parsed.ingredients.map((i) => i.name),
       });
-      for (const t of parsed.tags) await this.addTag(id, t, false);
+      for (const t of parsed.tags) await this.addTag(id, t);
       ids.push(id);
     }
     this.changed();
@@ -346,140 +306,134 @@ export class Repo {
     isBase?: boolean;
   }): Promise<number> {
     const now = nowIso();
-    return this.db.transaction(async (tx) => {
-      await tx.sql(
-        `INSERT INTO dish (name, status, form, base_id, is_base, effort, meal_slots, origin, confirmed_at, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        d.name,
-        d.status,
-        d.form,
-        d.baseId ?? null,
-        d.isBase ? 1 : 0,
-        d.effort,
-        d.mealSlots.join(','),
-        d.origin,
-        d.confirmed ? now : null,
-        now,
-      );
-      const [row] = await tx.sql<{ id: number }>('SELECT id FROM dish WHERE name = ? COLLATE NOCASE', d.name);
-      const id = Number(row!.id);
-      await tx.sql(`INSERT INTO dish_version (dish_id, n, tweaks, is_current, created_at) VALUES (?, 1, '[]', 1, ?)`, id, now);
-      for (const name of d.ingredientNames) {
-        const [ing] = await tx.sql<{ id: number }>('SELECT id FROM ingredient WHERE name = ? COLLATE NOCASE', name);
-        let ingId = ing ? Number(ing.id) : null;
-        if (ingId === null) {
-          await tx.sql(`INSERT INTO ingredient (name, kind, aliases) VALUES (?, 'fresh', '[]')`, name);
-          const [n] = await tx.sql<{ id: number }>('SELECT id FROM ingredient WHERE name = ? COLLATE NOCASE', name);
-          ingId = Number(n!.id);
-        }
-        await tx.sql(
-          `INSERT OR IGNORE INTO dish_ingredient (dish_id, ingredient_id, role, origin, confirmed) VALUES (?, ?, 'defining', ?, 1)`,
-          id,
-          ingId,
-          d.origin,
-        );
-      }
-      return id;
-    });
+    const row = must(
+      await this.sb
+        .from('dish')
+        .insert({
+          name: d.name,
+          status: d.status,
+          form: d.form,
+          base_id: d.baseId ?? null,
+          is_base: !!d.isBase,
+          effort: d.effort,
+          meal_slots: d.mealSlots.join(','),
+          origin: d.origin,
+          confirmed_at: d.confirmed ? now : null,
+          created_at: now,
+        })
+        .select('id')
+        .single(),
+      'add dish',
+    ) as { id: number };
+    const id = row.id;
+    must(await this.sb.from('dish_version').insert({ dish_id: id, n: 1, tweaks: [], is_current: true, created_at: now }), 'add version');
+    await this.linkIngredients(id, d.ingredientNames, d.origin);
+    this.changed();
+    return id;
+  }
+
+  private async linkIngredients(dishId: number, names: string[], origin = 'typed'): Promise<void> {
+    const links: { dish_id: number; ingredient_id: number; role: string; origin: string; confirmed: boolean }[] = [];
+    for (const raw of names) {
+      const name = raw.trim().toLowerCase();
+      if (!name) continue;
+      const ing = await this.ensureIngredient(name);
+      links.push({ dish_id: dishId, ingredient_id: ing.id, role: 'defining', origin, confirmed: true });
+    }
+    if (links.length) must(await this.sb.from('dish_ingredient').upsert(links, { onConflict: 'dish_id,ingredient_id', ignoreDuplicates: true }), 'link ingredients');
+  }
+
+  private async updateDish(id: number, patch: Partial<DishRow>): Promise<void> {
+    must(await this.sb.from('dish').update(patch).eq('id', id), 'update dish');
+    this.changed();
   }
 
   async setPinned(id: number, pinned: boolean): Promise<void> {
-    await this.q('UPDATE dish SET pinned = ? WHERE id = ?', pinned ? 1 : 0, id);
-    this.changed();
+    await this.updateDish(id, { pinned });
   }
 
   async pinnedCount(): Promise<number> {
-    const [row] = await this.q<{ n: number }>(`SELECT COUNT(*) AS n FROM dish WHERE pinned = 1 AND status <> 'retired'`);
-    return Number(row?.n ?? 0);
+    return (await this.snap()).dish.filter((d) => d.pinned && d.status !== 'retired').length;
   }
 
   async retire(id: number): Promise<void> {
-    await this.db.transaction(async (tx) => {
-      await tx.sql(`UPDATE dish SET status = 'retired', retired_at = ? WHERE id = ?`, nowIso(), id);
-      await tx.sql('DELETE FROM next_up WHERE dish_id = ?', id);
-    });
-    this.changed();
+    must(await this.sb.from('next_up').delete().eq('dish_id', id), 'next up');
+    await this.updateDish(id, { status: 'retired', retired_at: nowIso() });
   }
 
   async bringBack(id: number): Promise<void> {
-    await this.q(`UPDATE dish SET status = 'known', retired_at = NULL WHERE id = ?`, id);
-    this.changed();
+    await this.updateDish(id, { status: 'known', retired_at: null });
   }
 
   async updateNotes(id: number, notes: string): Promise<void> {
-    await this.q('UPDATE dish SET notes = ?, notes_updated_at = ? WHERE id = ?', notes, nowIso(), id);
-    this.changed();
+    await this.updateDish(id, { notes, notes_updated_at: nowIso() });
   }
 
   async rename(id: number, name: string): Promise<void> {
-    await this.q('UPDATE dish SET name = ? WHERE id = ?', name.trim(), id);
-    this.changed();
+    await this.updateDish(id, { name: name.trim() });
   }
 
   async setEffort(id: number, effort: 1 | 2 | 3): Promise<void> {
-    await this.q('UPDATE dish SET effort = ? WHERE id = ?', effort, id);
+    await this.updateDish(id, { effort });
+  }
+
+  private currentVersionRow(snap: Snapshot, dishId: number): VersionRow | undefined {
+    return snap.dish_version.find((v) => v.dish_id === dishId && v.is_current);
+  }
+
+  private async newVersion(dishId: number, tweaks: string[], body: string | null, createdAt = nowIso()): Promise<DishVersion> {
+    const snap = await this.snap();
+    const cur = this.currentVersionRow(snap, dishId);
+    const n = snap.dish_version.filter((v) => v.dish_id === dishId).reduce((m, v) => Math.max(m, v.n), 0) + 1;
+    if (cur) must(await this.sb.from('dish_version').update({ is_current: false }).eq('dish_id', dishId), 'versions');
+    const row = must(
+      await this.sb.from('dish_version').insert({ dish_id: dishId, n, body, tweaks, is_current: true, created_at: createdAt }).select('*').single(),
+      'add version',
+    ) as VersionRow;
     this.changed();
+    return rowToVersion(row);
   }
 
   /** "Note a tweak": one line → a new current version carrying every earlier line plus this one. */
   async addTweak(id: number, line: string): Promise<DishVersion> {
-    const text = line.trim();
-    const now = nowIso();
-    await this.db.transaction(async (tx) => {
-      const [cur] = await tx.sql<{ n: number; tweaks: string; body: string | null }>(
-        'SELECT n, tweaks, body FROM dish_version WHERE dish_id = ? AND is_current = 1',
-        id,
-      );
-      const n = cur ? Number(cur.n) + 1 : 1;
-      const tweaks = parseJson<string[]>(cur?.tweaks ?? '[]', []).concat([text]);
-      await tx.sql('UPDATE dish_version SET is_current = 0 WHERE dish_id = ?', id);
-      await tx.sql('INSERT INTO dish_version (dish_id, n, body, tweaks, is_current, created_at) VALUES (?, ?, ?, ?, 1, ?)', id, n, cur?.body ?? null, JSON.stringify(tweaks), now);
-    });
-    this.changed();
-    const [row] = await this.q('SELECT * FROM dish_version WHERE dish_id = ? AND is_current = 1', id);
-    return rowToVersion(row!);
+    const cur = this.currentVersionRow(await this.snap(), id);
+    return this.newVersion(id, jsonArray(cur?.tweaks).concat([line.trim()]), cur?.body ?? null);
   }
 
   async removeTweak(id: number, index: number): Promise<void> {
-    const [cur] = await this.q<{ n: number; tweaks: string; body: string | null }>('SELECT n, tweaks, body FROM dish_version WHERE dish_id = ? AND is_current = 1', id);
+    const cur = this.currentVersionRow(await this.snap(), id);
     if (!cur) return;
-    const tweaks = parseJson<string[]>(cur.tweaks, []);
+    const tweaks = jsonArray(cur.tweaks);
     tweaks.splice(index, 1);
-    await this.db.transaction(async (tx) => {
-      await tx.sql('UPDATE dish_version SET is_current = 0 WHERE dish_id = ?', id);
-      await tx.sql('INSERT INTO dish_version (dish_id, n, body, tweaks, is_current, created_at) VALUES (?, ?, ?, ?, 1, ?)', id, Number(cur.n) + 1, cur.body, JSON.stringify(tweaks), nowIso());
-    });
-    this.changed();
+    await this.newVersion(id, tweaks, cur.body);
   }
 
   async versions(id: number): Promise<DishVersion[]> {
-    return (await this.q('SELECT * FROM dish_version WHERE dish_id = ? ORDER BY n DESC', id)).map(rowToVersion);
+    return (await this.snap()).dish_version
+      .filter((v) => v.dish_id === id)
+      .map(rowToVersion)
+      .sort((a, b) => b.n - a.n);
   }
 
   async cookHistory(id: number): Promise<CookEvent[]> {
-    return (await this.q('SELECT * FROM cook_event WHERE dish_id = ? ORDER BY cooked_at DESC', id)).map(rowToCook);
+    return (await this.snap()).cook_event
+      .filter((c) => c.dish_id === id)
+      .map(rowToCook)
+      .sort((a, b) => b.cookedAt.localeCompare(a.cookedAt));
   }
 
   async setIngredients(id: number, names: string[]): Promise<void> {
-    await this.db.transaction(async (tx) => {
-      await tx.sql('DELETE FROM dish_ingredient WHERE dish_id = ?', id);
-      for (const raw of names) {
-        const name = raw.trim().toLowerCase();
-        if (!name) continue;
-        await tx.sql(`INSERT OR IGNORE INTO ingredient (name, kind, aliases) VALUES (?, 'fresh', '[]')`, name);
-        const [ing] = await tx.sql<{ id: number }>('SELECT id FROM ingredient WHERE name = ? COLLATE NOCASE', name);
-        await tx.sql(`INSERT OR IGNORE INTO dish_ingredient (dish_id, ingredient_id, role, origin, confirmed) VALUES (?, ?, 'defining', 'typed', 1)`, id, Number(ing!.id));
-      }
-    });
+    must(await this.sb.from('dish_ingredient').delete().eq('dish_id', id), 'ingredients');
+    await this.linkIngredients(id, names);
     this.changed();
   }
 
   async detail(id: number, now = new Date()): Promise<DetailView | null> {
-    const facts = await this.loadFacts(now);
+    const snap = await this.snap();
+    const facts = buildFacts(snap, now);
     const f = facts.get(id);
     if (!f) return null;
-    const settings = await this.settings();
-    const why = whyFor(f, settings, now);
+    const why = whyFor(f, settingsFrom(snap.setting), now);
     const base = f.dish.baseId !== null ? (facts.get(f.dish.baseId)?.dish ?? null) : null;
     const siblings = base ? [...facts.values()].filter((x) => x.dish.baseId === base.id && x.dish.id !== id).map((x) => x.dish) : [];
     const children = [...facts.values()].filter((x) => x.dish.baseId === id).map((x) => x.dish);
@@ -491,108 +445,115 @@ export class Repo {
   // ── tags ────────────────────────────────────────────────────────────────
 
   async tags(): Promise<Tag[]> {
-    const rows = await this.q<{ id: number; name: string; n: number }>(
-      `SELECT t.id, t.name, COUNT(d.id) AS n FROM tag t
-       LEFT JOIN dish_tag dt ON dt.tag_id = t.id
-       LEFT JOIN dish d ON d.id = dt.dish_id AND d.status <> 'retired'
-       GROUP BY t.id ORDER BY n DESC, t.name COLLATE NOCASE`,
-    );
-    return rows.map((r) => ({ id: Number(r.id), name: r.name, count: Number(r.n) }));
+    return tagCounts(await this.snap());
   }
 
-  async addTag(dishId: number, name: string, notify = true): Promise<void> {
+  async addTag(dishId: number, name: string): Promise<void> {
     const clean = name.trim().replace(/^#/, '').toLowerCase();
     if (!clean) return;
-    await this.db.transaction(async (tx) => {
-      await tx.sql('INSERT OR IGNORE INTO tag (name, created_at) VALUES (?, ?)', clean, nowIso());
-      const [t] = await tx.sql<{ id: number }>('SELECT id FROM tag WHERE name = ? COLLATE NOCASE', clean);
-      await tx.sql('INSERT OR IGNORE INTO dish_tag (dish_id, tag_id) VALUES (?, ?)', dishId, Number(t!.id));
-    });
-    if (notify) this.changed();
+    const snap = await this.snap();
+    let tag = snap.tag.find((t) => t.name.toLowerCase() === clean);
+    if (!tag) {
+      tag = must(await this.sb.from('tag').insert({ name: clean }).select('id, name').single(), 'add tag') as { id: number; name: string };
+    }
+    must(await this.sb.from('dish_tag').upsert({ dish_id: dishId, tag_id: tag.id }, { onConflict: 'dish_id,tag_id', ignoreDuplicates: true }), 'tag dish');
+    this.changed();
   }
 
   async removeTag(dishId: number, name: string): Promise<void> {
-    await this.q('DELETE FROM dish_tag WHERE dish_id = ? AND tag_id IN (SELECT id FROM tag WHERE name = ? COLLATE NOCASE)', dishId, name);
-    await this.q('DELETE FROM tag WHERE id NOT IN (SELECT tag_id FROM dish_tag)');
+    const snap = await this.snap();
+    const tag = snap.tag.find((t) => t.name.toLowerCase() === name.toLowerCase());
+    if (!tag) return;
+    must(await this.sb.from('dish_tag').delete().eq('dish_id', dishId).eq('tag_id', tag.id), 'untag');
+    const stillUsed = snap.dish_tag.some((dt) => dt.tag_id === tag.id && dt.dish_id !== dishId);
+    if (!stillUsed) must(await this.sb.from('tag').delete().eq('id', tag.id), 'drop tag');
     this.changed();
   }
 
   // ── cook / undo / next up / not tonight ─────────────────────────────────
 
   async cook(dishId: number, now = new Date()): Promise<CookReceipt> {
-    const dish = (await this.dish(dishId))!;
-    const receipt = await this.db.transaction(async (tx) => {
-      const [v] = await tx.sql<{ id: number }>('SELECT id FROM dish_version WHERE dish_id = ? AND is_current = 1', dishId);
-      await tx.sql('INSERT INTO cook_event (dish_id, cooked_at, version_id, meal_slot) VALUES (?, ?, ?, ?)', dishId, now.toISOString(), v ? Number(v.id) : null, mealSlotFor(now));
-      const [ev] = await tx.sql<{ id: number }>('SELECT last_insert_rowid() AS id');
-      const [nu] = await tx.sql<{ dish_id: number }>('SELECT dish_id FROM next_up WHERE id = ?', NEXT_UP_ID);
-      const clearedNextUp = !!nu && Number(nu.dish_id) === dishId;
-      if (clearedNextUp) await tx.sql('DELETE FROM next_up WHERE id = ?', NEXT_UP_ID);
-      await tx.sql('DELETE FROM suppression WHERE dish_id = ?', dishId);
-      return { eventId: Number(ev!.id), dish, clearedNextUp };
-    });
-    this.changed();
+    const receipt = await this.logCookAt(dishId, now.toISOString());
+    const nu = (await this.snap()).dish; // snapshot already invalidated by logCookAt; re-read next up below
+    void nu;
     return receipt;
   }
 
+  /** Records a cook at a given time; clears Next up and any Not-tonight suppression for the dish. */
+  async logCookAt(dishId: number, at: string): Promise<CookReceipt> {
+    const snap = await this.snap();
+    const dish = rowToDish(snap.dish.find((d) => d.id === dishId)!);
+    const version = this.currentVersionRow(snap, dishId);
+    const ev = must(
+      await this.sb
+        .from('cook_event')
+        .insert({ dish_id: dishId, cooked_at: at, version_id: version?.id ?? null, meal_slot: mealSlotFor(new Date(at)) })
+        .select('id')
+        .single(),
+      'log cook',
+    ) as { id: number };
+    const current = await this.nextUpDish();
+    const clearedNextUp = current?.id === dishId;
+    if (clearedNextUp) must(await this.sb.from('next_up').delete().eq('dish_id', dishId), 'next up');
+    if (snap.suppression.some((s) => s.dish_id === dishId)) must(await this.sb.from('suppression').delete().eq('dish_id', dishId), 'suppression');
+    this.changed();
+    return { eventId: ev.id, dish, clearedNextUp };
+  }
+
   async undoCook(receipt: CookReceipt): Promise<void> {
-    await this.db.transaction(async (tx) => {
-      await tx.sql('DELETE FROM cook_event WHERE id = ?', receipt.eventId);
-      if (receipt.clearedNextUp) await tx.sql('INSERT OR REPLACE INTO next_up (id, dish_id, set_at) VALUES (?, ?, ?)', NEXT_UP_ID, receipt.dish.id, nowIso());
-    });
+    must(await this.sb.from('cook_event').delete().eq('id', receipt.eventId), 'undo');
+    if (receipt.clearedNextUp) await this.setNextUp(receipt.dish.id);
     this.changed();
   }
 
   async nextUpDish(): Promise<Dish | null> {
-    const [row] = await this.q('SELECT d.* FROM next_up n JOIN dish d ON d.id = n.dish_id WHERE n.id = ?', NEXT_UP_ID);
-    return row ? rowToDish(row) : null;
+    const res = await this.sb.from('next_up').select('dish_id').maybeSingle();
+    const row = must(res, 'next up') as { dish_id: number } | null;
+    return row ? this.dish(row.dish_id) : null;
   }
 
   async setNextUp(dishId: number): Promise<void> {
-    await this.q('INSERT OR REPLACE INTO next_up (id, dish_id, set_at) VALUES (?, ?, ?)', NEXT_UP_ID, dishId, nowIso());
+    must(await this.sb.from('next_up').upsert({ dish_id: dishId, set_at: nowIso() }, { onConflict: 'user_id' }), 'set next up');
     this.changed();
   }
 
   async clearNextUp(): Promise<void> {
-    await this.q('DELETE FROM next_up WHERE id = ?', NEXT_UP_ID);
+    must(await this.sb.from('next_up').delete().gte('dish_id', 0), 'clear next up');
     this.changed();
   }
 
   async notTonight(dishId: number, now = new Date()): Promise<void> {
-    await this.q('INSERT OR REPLACE INTO suppression (dish_id, until) VALUES (?, ?)', dishId, addDays(now, NOT_TONIGHT_DAYS).toISOString());
+    must(await this.sb.from('suppression').upsert({ dish_id: dishId, until: addDays(now, NOT_TONIGHT_DAYS).toISOString() }, { onConflict: 'dish_id' }), 'not tonight');
     this.changed();
   }
 
   // ── bases and variations ────────────────────────────────────────────────
 
   async markBase(id: number, isBase: boolean): Promise<void> {
-    await this.q('UPDATE dish SET is_base = ? WHERE id = ?', isBase ? 1 : 0, id);
-    this.changed();
+    await this.updateDish(id, { is_base: isBase });
   }
 
   /** Link to a base; unlinking copies the inherited ingredients down first so nothing is lost. */
   async setBase(id: number, baseId: number | null): Promise<void> {
     if (baseId === id) return;
-    await this.db.transaction(async (tx) => {
-      if (baseId === null) {
-        const inherited = await tx.sql<{ ingredient_id: number; role: string }>(
-          `WITH RECURSIVE chain(anc_id, depth) AS (
-             SELECT base_id, 1 FROM dish WHERE id = ? AND base_id IS NOT NULL
-             UNION ALL
-             SELECT d.base_id, c.depth + 1 FROM chain c JOIN dish d ON d.id = c.anc_id WHERE d.base_id IS NOT NULL AND c.depth < 8
-           )
-           SELECT DISTINCT di.ingredient_id, di.role FROM chain c JOIN dish_ingredient di ON di.dish_id = c.anc_id`,
-          id,
+    if (baseId === null) {
+      const facts = await this.loadFacts();
+      const inherited = facts.get(id)?.ingredients.filter((i) => i.inherited) ?? [];
+      if (inherited.length) {
+        must(
+          await this.sb
+            .from('dish_ingredient')
+            .upsert(
+              inherited.map((i) => ({ dish_id: id, ingredient_id: i.id, role: i.role, origin: 'typed', confirmed: true })),
+              { onConflict: 'dish_id,ingredient_id', ignoreDuplicates: true },
+            ),
+          'copy ingredients',
         );
-        for (const r of inherited) {
-          await tx.sql(`INSERT OR IGNORE INTO dish_ingredient (dish_id, ingredient_id, role, origin, confirmed) VALUES (?, ?, ?, 'typed', 1)`, id, Number(r.ingredient_id), r.role);
-        }
-      } else {
-        await tx.sql('UPDATE dish SET is_base = 1 WHERE id = ?', baseId);
       }
-      await tx.sql('UPDATE dish SET base_id = ? WHERE id = ?', baseId, id);
-    });
-    this.changed();
+    } else {
+      must(await this.sb.from('dish').update({ is_base: true }).eq('id', baseId), 'mark base');
+    }
+    await this.updateDish(id, { base_id: baseId });
   }
 
   /** On a base: type only the addition ("mushroom") → "Mushroom gravy" linked to it. */
@@ -618,25 +579,26 @@ export class Repo {
       ingredientNames,
       baseId,
     });
-    await this.q('UPDATE dish SET is_base = 1 WHERE id = ?', baseId);
-    this.changed();
+    if (!base.isBase) await this.updateDish(baseId, { is_base: true });
     return id;
   }
 
   async baseSuggestions(): Promise<BaseProposal[]> {
-    const rows = await this.q<{ id: number; name: string; form: string | null; base_id: number | null; is_base: number; ingredients: string | null }>(
-      `SELECT d.id, d.name, d.form, d.base_id, d.is_base, GROUP_CONCAT(i.name, '|') AS ingredients
-       FROM dish d LEFT JOIN dish_ingredient di ON di.dish_id = d.id AND di.role = 'defining' LEFT JOIN ingredient i ON i.id = di.ingredient_id
-       WHERE d.status = 'known' GROUP BY d.id`,
-    );
-    const candidates: BaseCandidate[] = rows.map((r) => ({
-      id: Number(r.id),
-      name: r.name,
-      form: r.form,
-      baseId: r.base_id === null ? null : Number(r.base_id),
-      isBase: Number(r.is_base) === 1,
-      definingIngredients: r.ingredients ? r.ingredients.split('|') : [],
-    }));
+    const snap = await this.snap();
+    const ingName = new Map(snap.ingredient.map((i) => [i.id, i.name]));
+    const candidates: BaseCandidate[] = snap.dish
+      .filter((d) => d.status === 'known')
+      .map((d) => ({
+        id: d.id,
+        name: d.name,
+        form: d.form,
+        baseId: d.base_id,
+        isBase: !!d.is_base,
+        definingIngredients: snap.dish_ingredient
+          .filter((l) => l.dish_id === d.id && l.role === 'defining')
+          .map((l) => ingName.get(l.ingredient_id))
+          .filter((n): n is string => !!n),
+      }));
     return suggestBases(candidates);
   }
 
@@ -653,16 +615,12 @@ export class Repo {
       ingredientNames: p.sharedIngredients,
       isBase: true,
     });
-    await this.db.transaction(async (tx) => {
-      for (const c of p.children) {
-        await tx.sql('UPDATE dish SET base_id = ? WHERE id = ?', baseId, c.id);
-        await tx.sql(
-          `DELETE FROM dish_ingredient WHERE dish_id = ? AND ingredient_id IN (SELECT id FROM ingredient WHERE name IN (${p.sharedIngredients.map(() => '?').join(',')}))`,
-          c.id,
-          ...p.sharedIngredients,
-        );
-      }
-    });
+    const snap = await this.snap();
+    const sharedIds = snap.ingredient.filter((i) => p.sharedIngredients.includes(i.name.toLowerCase())).map((i) => i.id);
+    for (const c of p.children) {
+      must(await this.sb.from('dish').update({ base_id: baseId }).eq('id', c.id), 'link child');
+      if (sharedIds.length) must(await this.sb.from('dish_ingredient').delete().eq('dish_id', c.id).in('ingredient_id', sharedIds), 'strip inherited');
+    }
     this.changed();
     return baseId;
   }
@@ -670,37 +628,39 @@ export class Repo {
   // ── expansion proposals ─────────────────────────────────────────────────
 
   async proposals(n = 10): Promise<{ proposals: Proposal[]; answered: number }> {
-    const [names, refused, bases, ingUse, formUse, answered] = await Promise.all([
-      this.q<{ name: string }>('SELECT name FROM dish'),
-      this.q<{ dish_key: string }>('SELECT dish_key FROM proposal_answer'),
-      this.q<{ id: number; name: string; form: string | null }>('SELECT id, name, form FROM dish WHERE is_base = 1 AND status <> \'retired\''),
-      this.q<{ name: string }>(
-        `SELECT i.name FROM dish_ingredient di JOIN ingredient i ON i.id = di.ingredient_id JOIN dish d ON d.id = di.dish_id
-         WHERE d.status <> 'retired' GROUP BY i.id ORDER BY COUNT(*) DESC, i.name`,
-      ),
-      this.q<{ form: string }>(`SELECT form FROM dish WHERE form IS NOT NULL AND status <> 'retired' GROUP BY form ORDER BY COUNT(*) DESC`),
-      this.setting('proposals_answered'),
-    ]);
+    const snap = await this.snap();
+    const refused = must(await this.sb.from('proposal_answer').select('dish_key'), 'proposal answers') as { dish_key: string }[];
+    const live = snap.dish.filter((d) => d.status !== 'retired');
+    const ingName = new Map(snap.ingredient.map((i) => [i.id, i.name]));
+    const ingCount = new Map<string, number>();
+    for (const l of snap.dish_ingredient) {
+      if (!live.some((d) => d.id === l.dish_id)) continue;
+      const name = ingName.get(l.ingredient_id);
+      if (name) ingCount.set(name, (ingCount.get(name) ?? 0) + 1);
+    }
+    const formCount = new Map<string, number>();
+    for (const d of live) if (d.form) formCount.set(d.form, (formCount.get(d.form) ?? 0) + 1);
+    const byCount = (m: Map<string, number>) => [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k]) => k);
     const input = {
       lex: this.lex,
       plaus: this.plaus,
-      existing: new Set(names.map((r) => proposalKey(r.name))),
+      existing: new Set(snap.dish.map((d) => proposalKey(d.name))),
       refused: new Set(refused.map((r) => r.dish_key)),
-      bases: bases.map((b) => ({ id: Number(b.id), name: b.name, form: b.form })),
-      usedIngredients: ingUse.map((r) => r.name),
-      usedForms: formUse.map((r) => r.form),
+      bases: live.filter((d) => d.is_base).map((b) => ({ id: b.id, name: b.name, form: b.form })),
+      usedIngredients: byCount(ingCount),
+      usedForms: byCount(formCount),
     };
     const out: Proposal[] = [];
     for (const p of generateProposals(input)) {
       out.push(p);
       if (out.length >= n) break;
     }
-    return { proposals: out, answered: Number(answered ?? 0) };
+    return { proposals: out, answered: Number((await this.setting('proposals_answered')) ?? 0) };
   }
 
   async answerProposal(p: Proposal, answer: 'yes' | 'never' | 'no'): Promise<void> {
     if (answer === 'no') {
-      await this.q('INSERT OR REPLACE INTO proposal_answer (dish_key, answer, answered_at) VALUES (?, ?, ?)', p.key, 'no', nowIso());
+      must(await this.sb.from('proposal_answer').upsert({ dish_key: p.key, answer: 'no', answered_at: nowIso() }, { onConflict: 'user_id,dish_key' }), 'refuse proposal');
     } else {
       const form = p.form ? this.lex.formByAlias.get(normaliseWord(p.form)) : undefined;
       await this.insertDish({
@@ -716,20 +676,19 @@ export class Repo {
       });
     }
     const answered = Number((await this.setting('proposals_answered')) ?? 0) + 1;
-    await this.q(`INSERT OR REPLACE INTO setting (key, value) VALUES ('proposals_answered', ?)`, String(answered));
-    this.changed();
+    await this.setSetting('proposals_answered', String(answered));
   }
 
-  // ── search / stats / export ─────────────────────────────────────────────
+  // ── search / stats ──────────────────────────────────────────────────────
 
   async search(query: string, excludeIngredients: string[] = [], now = new Date()) {
-    const facts = await this.loadFacts(now);
-    const allVersions = await this.q<{ dish_id: number; tweaks: string }>('SELECT dish_id, tweaks FROM dish_version');
+    const snap = await this.snap();
+    const facts = buildFacts(snap, now);
     const tweakLines = new Map<number, string[]>();
-    for (const v of allVersions) {
-      const list = tweakLines.get(Number(v.dish_id)) ?? [];
-      for (const line of parseJson<string[]>(v.tweaks, [])) if (!list.includes(line)) list.push(line);
-      tweakLines.set(Number(v.dish_id), list);
+    for (const v of snap.dish_version) {
+      const list = tweakLines.get(v.dish_id) ?? [];
+      for (const line of jsonArray(v.tweaks)) if (!list.includes(line)) list.push(line);
+      tweakLines.set(v.dish_id, list);
     }
     const docs: SearchDoc<DishFacts>[] = [...facts.values()].map((f) => ({
       item: f,
@@ -743,34 +702,22 @@ export class Repo {
   }
 
   async scoreboard(now = new Date()): Promise<{ cooked: number; known: number }> {
-    const [c] = await this.q<{ n: number }>(
-      `SELECT COUNT(DISTINCT c.dish_id) AS n FROM cook_event c JOIN dish d ON d.id = c.dish_id WHERE c.cooked_at >= ? AND d.status <> 'retired'`,
-      startOfMonthIso(now),
-    );
-    const [k] = await this.q<{ n: number }>(`SELECT COUNT(*) AS n FROM dish WHERE status = 'known'`);
-    return { cooked: Number(c?.n ?? 0), known: Number(k?.n ?? 0) };
+    const snap = await this.snap();
+    const since = startOfMonthIso(now);
+    const live = new Set(snap.dish.filter((d) => d.status !== 'retired').map((d) => d.id));
+    const cooked = new Set(snap.cook_event.filter((c) => live.has(c.dish_id) && new Date(c.cooked_at).toISOString() >= since).map((c) => c.dish_id)).size;
+    return { cooked, known: snap.dish.filter((d) => d.status === 'known').length };
   }
 
   async totals(): Promise<{ dishes: number; cooks: number }> {
-    const [d] = await this.q<{ n: number }>('SELECT COUNT(*) AS n FROM dish');
-    const [c] = await this.q<{ n: number }>('SELECT COUNT(*) AS n FROM cook_event');
-    return { dishes: Number(d?.n ?? 0), cooks: Number(c?.n ?? 0) };
+    const snap = await this.snap();
+    return { dishes: snap.dish.length, cooks: snap.cook_event.length };
   }
 
-  async exportSqlite(): Promise<void> {
-    await exportSqlite(this.db);
-    await this.setSetting('last_export_at', nowIso());
-  }
+  // ── dev-only helpers used by the demo seed ──────────────────────────────
 
-  async exportJson(): Promise<void> {
-    await exportJson(this.db);
-    await this.setSetting('last_export_at', nowIso());
-  }
-
-  async importSqlite(file: File): Promise<void> {
-    await importSqlite(this.db, file);
-    await migrate(this.db);
-    await this.seedIngredients();
+  async backdateVersions(dishId: number, createdAt: string): Promise<void> {
+    must(await this.sb.from('dish_version').update({ created_at: createdAt }).eq('dish_id', dishId), 'backdate');
     this.changed();
   }
 }
@@ -792,61 +739,4 @@ export function whyFor(f: DishFacts, settings: Settings, now: Date): BucketResul
     forgottenDays: settings.forgottenDays,
     now,
   });
-}
-
-function parseJson<T>(s: string | null | undefined, fallback: T): T {
-  if (!s) return fallback;
-  try {
-    return JSON.parse(s) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-function rowToDish(r: Row): Dish {
-  return {
-    id: Number(r.id),
-    name: String(r.name),
-    status: r.status as Dish['status'],
-    form: (r.form as string | null) ?? null,
-    baseId: r.base_id === null || r.base_id === undefined ? null : Number(r.base_id),
-    isBase: Number(r.is_base) === 1,
-    effort: Number(r.effort) as Dish['effort'],
-    mealSlots: String(r.meal_slots ?? '')
-      .split(',')
-      .filter(Boolean) as MealSlot[],
-    pinned: Number(r.pinned) === 1,
-    notes: String(r.notes ?? ''),
-    notesUpdatedAt: (r.notes_updated_at as string | null) ?? null,
-    retiredAt: (r.retired_at as string | null) ?? null,
-    origin: r.origin as Dish['origin'],
-    confirmedAt: (r.confirmed_at as string | null) ?? null,
-    createdAt: String(r.created_at),
-  };
-}
-
-function rowToIngredient(r: Row): Ingredient {
-  return { id: Number(r.id), name: String(r.name), kind: r.kind as IngredientKind, aliases: parseJson(r.aliases as string, []) };
-}
-
-function rowToVersion(r: Row): DishVersion {
-  return {
-    id: Number(r.id),
-    dishId: Number(r.dish_id),
-    n: Number(r.n),
-    body: (r.body as string | null) ?? null,
-    tweaks: parseJson(r.tweaks as string, []),
-    isCurrent: Number(r.is_current) === 1,
-    createdAt: String(r.created_at),
-  };
-}
-
-function rowToCook(r: Row): CookEvent {
-  return {
-    id: Number(r.id),
-    dishId: Number(r.dish_id),
-    cookedAt: String(r.cooked_at),
-    versionId: r.version_id === null || r.version_id === undefined ? null : Number(r.version_id),
-    mealSlot: r.meal_slot as MealSlot,
-  };
 }
