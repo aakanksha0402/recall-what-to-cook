@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNav, useUndo } from './context';
 import { AddScreen } from './screens/Add';
 import { CookScreen } from './screens/Cook';
@@ -10,6 +11,7 @@ import { VariationsScreen } from './screens/Variations';
 export function Shell({ needRefresh, onRefresh }: { needRefresh: boolean; onRefresh: () => void }) {
   const nav = useNav();
   const undo = useUndo();
+  const fault = useFaultStrip();
   const s = nav.current;
   const showTabBar = s.name !== 'search' && s.name !== 'settings';
 
@@ -54,6 +56,14 @@ export function Shell({ needRefresh, onRefresh }: { needRefresh: boolean; onRefr
             </button>
           </div>
         )}
+        {fault.message && (
+          <div className="undo" style={{ background: 'var(--color-accent-2-100)' }}>
+            <span className="warn">Could not save — {fault.message}</span>
+            <button type="button" className="link" style={{ color: 'var(--color-accent-2-700)' }} onClick={fault.dismiss}>
+              Dismiss
+            </button>
+          </div>
+        )}
         {needRefresh && (
           <div className="undo" style={{ background: 'var(--color-surface)' }}>
             <span>A new version of Akku is ready.</span>
@@ -78,6 +88,29 @@ export function Shell({ needRefresh, onRefresh }: { needRefresh: boolean; onRefr
       </div>
     </div>
   );
+}
+
+/**
+ * Screens fire writes as `void repo.x()`; a failed save would otherwise vanish into the
+ * console. Catch it here and show a strip, so a tap that did nothing says why.
+ */
+function useFaultStrip(): { message: string | null; dismiss: () => void } {
+  const [message, setMessage] = useState<string | null>(null);
+  useEffect(() => {
+    let timer: number | null = null;
+    const onReject = (e: PromiseRejectionEvent) => {
+      const msg = e.reason instanceof Error ? e.reason.message : String(e.reason);
+      setMessage(msg);
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => setMessage(null), 8000);
+    };
+    window.addEventListener('unhandledrejection', onReject);
+    return () => {
+      window.removeEventListener('unhandledrejection', onReject);
+      if (timer) window.clearTimeout(timer);
+    };
+  }, []);
+  return { message, dismiss: () => setMessage(null) };
 }
 
 function screenKey(s: { name: string; id?: number }): string {

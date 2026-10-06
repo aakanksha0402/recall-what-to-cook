@@ -12,6 +12,7 @@ export function DishDetailScreen({ id }: { id: number }) {
   const { data: allTags } = useQuery((r) => r.tags());
   const { data: pantry } = useQuery((r) => r.pantryHave());
   const { data: pinnedCount } = useQuery((r) => r.pinnedCount());
+  const { data: nextUp } = useQuery((r) => r.nextUpDish());
 
   const [notes, setNotes] = useState<string | null>(null);
   const [tweak, setTweak] = useState('');
@@ -34,6 +35,7 @@ export function DishDetailScreen({ id }: { id: number }) {
   const { facts: f, why, base, siblings, children, versions, history } = view;
   const d = f.dish;
   const isRetired = d.status === 'retired';
+  const isNextUp = nextUp?.id === d.id;
   const pantryNames = new Set((pantry ?? []).map((p) => p.name));
   const missing = pantry && pantry.length ? f.ingredients.filter((i) => i.kind === 'fresh' && !pantryNames.has(i.name)) : [];
   const tweaks = f.currentVersion?.tweaks ?? [];
@@ -130,10 +132,15 @@ export function DishDetailScreen({ id }: { id: number }) {
           </>
         )}
       </div>
-      {(d.pinned || isRetired) && (
-        <Kicker warn style={{ margin: '-12px 0 20px' }}>
-          {isRetired ? 'Retired · not suggested, still searchable' : 'Pinned · kept near the top of suggestions'}
-        </Kicker>
+      {(d.pinned || isRetired || isNextUp) && (
+        <div style={{ margin: '-12px 0 20px' }}>
+          {(d.pinned || isRetired) && (
+            <Kicker warn style={{ marginBottom: 4 }}>
+              {isRetired ? 'Retired · not suggested, still searchable' : 'Pinned · kept near the top of suggestions'}
+            </Kicker>
+          )}
+          {isNextUp && <Kicker style={{ marginBottom: 4 }}>Next up · parked for the next meal</Kicker>}
+        </div>
       )}
       {d.pinned && (pinnedCount ?? 0) > 10 && (
         <div className="mut meta" style={{ margin: '-12px 0 20px' }}>
@@ -231,8 +238,8 @@ export function DishDetailScreen({ id }: { id: number }) {
           <button type="button" className="btn btn-primary" onClick={() => void cook()}>
             Cook this
           </button>
-          <button type="button" className="btn btn-secondary" onClick={() => void repo.setNextUp(d.id)}>
-            Next up
+          <button type="button" className="btn btn-secondary nowrap" onClick={() => void (isNextUp ? repo.clearNextUp() : repo.setNextUp(d.id))} title={isNextUp ? 'Tap to clear' : 'Park this for the next meal'}>
+            {isNextUp ? 'Parked ✓' : 'Next up'}
           </button>
           <button type="button" className="btn btn-ghost" onClick={() => setShowTweak(true)}>
             Note a tweak

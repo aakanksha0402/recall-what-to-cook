@@ -91,8 +91,13 @@ export function CookScreen() {
                 <button type="button" className="btn btn-primary" onClick={() => void cook(lead.dish.id)}>
                   Cook this
                 </button>
-                <button type="button" className="btn btn-secondary nowrap" onClick={() => void repo.setNextUp(lead.dish.id)}>
-                  Next up
+                <button
+                  type="button"
+                  className="btn btn-secondary nowrap"
+                  onClick={() => void (home!.nextUp?.id === lead.dish.id ? repo.clearNextUp() : repo.setNextUp(lead.dish.id))}
+                  title={home!.nextUp?.id === lead.dish.id ? 'Tap to clear' : 'Park this for the next meal'}
+                >
+                  {home!.nextUp?.id === lead.dish.id ? 'Parked ✓' : 'Next up'}
                 </button>
                 <button type="button" className="btn btn-ghost nowrap" onClick={() => void repo.notTonight(lead.dish.id)}>
                   Not tonight
